@@ -1,0 +1,5 @@
+uploads/
+temp/
+*.log
+*.env
+robot.png

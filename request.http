@@ -1,0 +1,26 @@
+###
+# POST http://localhost:8080/upload
+# Content-Type: multipart/form-data
+# Accept: application/json   
+
+# {
+#     "file": @"C:/Users/ADMIN/file-upload/robot.png"
+# }
+
+curl -X POST http://localhost:8080/upload \
+  -H "Accept: application/json" \
+  -F "file=@\"C:/Users/ADMIN/file-upload/robot.png\""
+
+###
+curl -X POST http://localhost:8080/upload ^
+  -H "Accept: application/json" ^
+  -F file=@C:/Users/ADMIN/file-upload/robot.png
+
+###
+curl -v -X POST -F file=@C:/Users/ADMIN/file-upload/robot.png http://localhost:8080/upload
+
+###
+curl -v -X POST http://localhost:8080/upload -F "file=@C:\Users\ADMIN\file-upload\robot.png"
+
+
+
