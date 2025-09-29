@@ -1,12 +1,21 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/dev-tams/file-upload/handlers"
+	"io"
+	"os"
 
+	"github.com/dev-tams/file-upload/config"
+	"github.com/dev-tams/file-upload/handlers"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
+	gin.DisableConsoleColor()
+	f, _ := os.Create("gin.log")
+	gin.DefaultWriter = io.MultiWriter(f)
+
+	config.ConnectDatabase()
 
 	router := gin.Default()
 	router.POST("/upload", handlers.PostFile)
