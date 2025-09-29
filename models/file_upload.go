@@ -1,7 +1,14 @@
 package models
 
-type File struct{
-	ID int `json:"id"`
-	Name string `json:"name"`
-	Path string `json:"path"`
+ import "gorm.io/gorm"
+
+type File struct {
+	gorm.Model
+	ID          string         `gorm:"uuid"`
+	StoredName  string         
+	OriginalName string         
+	DisplayName  string        
+	UploadedAt   string        
+	Size        int64          
+	Path        string
 }

@@ -72,6 +72,8 @@ func PostFile(c *gin.Context) {
 		return
 	}
 
+	c.Param(file.Filename)
+	
 	err = c.SaveUploadedFile(file, "uploads/" + file.Filename)
 	if err != nil{
 		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
