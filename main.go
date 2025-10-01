@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -22,5 +23,6 @@ func main() {
 	router.GET("/files/:filename", handlers.GetFile)
 	router.GET("/files", handlers.GetAllFile)
 
+	fmt.Println(" server running on port 80")
 	router.Run(":8080")
 }

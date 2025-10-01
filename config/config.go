@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/dev-tams/file-upload/models"
 	"gorm.io/driver/sqlite"
@@ -12,9 +12,8 @@ import (
 var DB *gorm.DB
 func ConnectDatabase() {
 	database, err := gorm.Open(sqlite.Open("file.db"), &gorm.Config{})
-
 	if err != nil{
-		fmt.Println("error connecting to db", err)
+		log.Fatal("error connecting to db", err)
 	}
 	database.AutoMigrate(&models.File{})
 
