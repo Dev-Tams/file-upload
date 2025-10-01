@@ -4,3 +4,4 @@ temp/
 *.env
 robot.png
 note
+file.db
