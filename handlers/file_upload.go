@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/dev-tams/file-upload/actions"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
 	"github.com/gin-gonic/gin"
@@ -25,14 +26,14 @@ func GetFile(c *gin.Context) {
 	// 	return
 	// }
 
-	if err := config.DB.Where("id = ?", ID).First(&file).Error; err != nil{
+	if err := config.DB.Where("id = ?", ID).First(&file).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "error finding file in db"})
 		return
 	}
 
 	filePath := filepath.Join("uploads", file.StoredName)
 
-	if _, err:= os.Stat(filePath); os.IsNotExist(err) {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		c.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
 	}
 
@@ -47,22 +48,22 @@ func GetFile(c *gin.Context) {
 
 // Return as a JSON array.
 func GetAllFile(c *gin.Context) {
-	dir := "uploads"
 
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "problem with folser"})
+	var files []models.File
+	if err := config.DB.Find(&files).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch files"})
 		return
 	}
 
 	var fileList []gin.H
 	for _, f := range files {
-		info, _ := f.Info()
 		fileList = append(fileList, gin.H{
-			"name":    f.Name(),
-			"type":    f.Type(),
-			"size":    info.Size(),
-			"modtime": info.ModTime(),
+			"id":           f.ID,
+			"originalName": f.OriginalName,
+			"size":         f.Size,
+			"displayName":  f.DisplayName,
+			"path":         f.Path,
+			"uploadedAt":   f.UploadedAt,
 		})
 	}
 
@@ -72,40 +73,58 @@ func GetAllFile(c *gin.Context) {
 }
 
 func PostFile(c *gin.Context) {
-	var files models.File
-
-	file, err := c.FormFile("file")
+	form, err:= c.MultipartForm()
 	if err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
-		return
-	}
-	id := uuid.New().String()
-	storedName := id + filepath.Ext(file.Filename)
-
-	savedPath := filepath.Join("uploads", storedName)
-	if err = c.SaveUploadedFile(file, savedPath); err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	files.ID = id
-	files.StoredName = storedName
-	files.OriginalName = file.Filename
-	files.DisplayName = file.Filename
-	files.UploadedAt = time.Now()
-	files.Size = file.Size
-	files.Path = savedPath
-
-	if err := config.DB.Create(&files).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error saving file to db": err.Error()})
+	multipleFiles := form.File["file"]
+	if len(multipleFiles) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "no files uploaded"})
 		return
+	}
+
+	var uploadedFiles []models.File
+
+	for _, file := range multipleFiles {
+		id := uuid.New().String()
+		storedName := id + filepath.Ext(file.Filename)
+
+		// validate file size & ext
+		if err := actions.ValidateFile(file, 1, []string{".png", ".jpg", ".jpeg"}); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		savedPath := filepath.Join("uploads", storedName)
+		if err := c.SaveUploadedFile(file, savedPath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		uploadedFile := models.File{
+			ID:           id,
+			StoredName:   storedName,
+			OriginalName: file.Filename,
+			DisplayName:  file.Filename,
+			UploadedAt:   time.Now(),
+			Size:         file.Size,
+			Path:         savedPath,
+		}
+
+		if err := config.DB.Create(&uploadedFile).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error saving file to db": err.Error()})
+			return
+		}
+
+		uploadedFiles = append(uploadedFiles, uploadedFile)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "File uploaded successfully!",
-		"file":    files,
+		"message": "Files uploaded successfully!",
+		"files":   uploadedFiles, // return all files, not just the last one
 	})
-
 }
 
 // func FormatFile(path string) (newPath string, err error) {
