@@ -20,7 +20,7 @@ func main() {
 
 	router := gin.Default()
 	router.POST("/upload", handlers.PostFile)
-	router.GET("/files/:filename", handlers.GetFile)
+	router.GET("/files/:id", handlers.GetFile)
 	router.GET("/files", handlers.GetAllFile)
 
 	fmt.Println(" server running on port 80")

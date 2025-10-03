@@ -13,19 +13,32 @@ import (
 )
 
 func GetFile(c *gin.Context) {
-	filename := c.Param("filename")
-	if filename == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "filename param required"})
+	ID := c.Param("id")
+	if ID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
 		return
 	}
 
-	filePath := "uploads/" + filename
+	var file models.File
+	// if err := config.DB.First(&files, ID); err != nil{
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding file"})
+	// 	return
+	// }
 
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "file not found"})
+	if err := config.DB.Where("id = ?", ID).First(&file).Error; err != nil{
+		c.JSON(http.StatusNotFound, gin.H{"error": "error finding file in db"})
 		return
 	}
+
+	filePath := filepath.Join("uploads", file.StoredName)
+
+	if _, err:= os.Stat(filePath); os.IsNotExist(err) {
+		c.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
+	}
+
+	// Serve the file
 	c.File(filePath)
+
 }
 
 // Scan the uploads/ folder.
