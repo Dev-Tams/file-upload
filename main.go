@@ -7,9 +7,14 @@ import (
 
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/handlers"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
+	func init() {
+		godotenv.Load()
+	}
 func main() {
 
 	gin.DisableConsoleColor()
@@ -19,10 +24,23 @@ func main() {
 	config.ConnectDatabase()
 
 	router := gin.Default()
-	router.POST("/upload", handlers.PostFile)
-	router.GET("/files/:id", handlers.GetFile)
-	router.GET("/files", handlers.GetAllFile)
+	router.Use(cors.Default())
 
-	fmt.Println(" server running on port 80")
-	router.Run(":8080")
+	{
+		api := router.Group("api")
+		api.POST("/upload", handlers.PostFile)
+		api.GET("/files/:id", handlers.GetFile)
+		api.GET("/files", handlers.GetAllFile)
+
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+
+	fmt.Println(" server running on port 8080")
+	router.Run(":" + port)
+
 }
