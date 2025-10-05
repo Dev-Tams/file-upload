@@ -28,6 +28,12 @@ func main() {
 
 	{
 		api := router.Group("api")
+		
+		api.POST("/register", handlers.Register)
+		api.DELETE("/delete:id", handlers.DeleteUser)
+		api.GET("/users", handlers.FindUsers)
+
+
 		api.POST("/upload", handlers.PostFile)
 		api.GET("/files/:id", handlers.GetFile)
 		api.GET("/files", handlers.GetAllFile)
@@ -36,11 +42,11 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8000"
 	}
 
 
-	fmt.Println(" server running on port 8080")
+	fmt.Printf(" server running on port %s", os.Getenv(port))
 	router.Run(":" + port)
 
 }

@@ -1,2 +1,16 @@
+GET http://127.0.0.1:8080/api/users
+Accept: application/json
+Content-Type: application/json
 
+{
 
+}
+
+###
+GET http://127.0.0.1:8080/api/files
+Accept: application/json
+Content-Type: application/json
+
+{
+
+}
