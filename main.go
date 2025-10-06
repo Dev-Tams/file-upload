@@ -30,8 +30,9 @@ func main() {
 		api := router.Group("api")
 		
 		api.POST("/register", handlers.Register)
-		api.DELETE("/delete:id", handlers.DeleteUser)
-		api.GET("/users", handlers.FindUsers)
+		api.DELETE("/delete/:id", handlers.DeleteUser)
+		api.GET("/users", handlers.FetchUsers)
+		api.GET("/users/:id", handlers.FetchUser)
 
 
 		api.POST("/upload", handlers.PostFile)
@@ -42,7 +43,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8000"
+		port = "8080"
 	}
 
 

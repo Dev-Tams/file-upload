@@ -1,4 +1,4 @@
-GET http://127.0.0.1:8080/api/users
+GET http://127.0.0.1:8000/api/users
 Accept: application/json
 Content-Type: application/json
 
@@ -7,10 +7,24 @@ Content-Type: application/json
 }
 
 ###
-GET http://127.0.0.1:8080/api/files
+GET http://127.0.0.1:8000/api/files
 Accept: application/json
 Content-Type: application/json
 
 {
 
 }
+
+###
+POST  http://127.0.0.1:8000/api/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "user",
+  "password": "yourpassword"
+}
+
+###
+DELETE  http://127.0.0.1:8000/api/delete/5df10960-8ce2-45ea-8fef-ba8a7603c291
+Content-Type: application/json
