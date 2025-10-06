@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/dev-tams/file-upload/actions"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,18 @@ func Register(c *gin.Context) {
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid JSON format",
+			"details": err.Error(),
 		})
+		return
+	}
+
+	if !actions.IsValidEmail(user.Email)  {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email format"})
+		return
+	}
+
+	if len(user.Password) < 6 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "password must be at least 6 characters"})
 		return
 	}
 
@@ -49,39 +61,3 @@ func Register(c *gin.Context) {
 	})
 
 }
-
-func DeleteUser( c *gin.Context){
-
-	var user models.User
-
-	id := c.Param("id")
-	
-	if err := config.DB.Where("id = ? ", id).First(&user).Error; err != nil{
-		c.JSONP(http.StatusNotAcceptable, gin.H{
-			"error": "user not found",
-			"details" : err.Error(),
-		})
-	}
-	if err := config.DB.Delete(&user, id).Error; err != nil{
-		c.JSONP(http.StatusNotAcceptable, gin.H{
-			"error": "failed to delete user",
-			"details" : err.Error(),
-		})
-	}
-}
-func FindUsers(c *gin.Context) {
-	
-	var users []models.User
-
-	if err := config.DB.Find(&users).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "All users from DB",
-		"data":    users,
-	})
-
-}
-
-
