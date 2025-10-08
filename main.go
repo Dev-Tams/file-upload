@@ -7,14 +7,15 @@ import (
 
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/handlers"
+	"github.com/dev-tams/go-auth/auth"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
-	func init() {
-		godotenv.Load()
-	}
+func init() {
+	godotenv.Load()
+}
 func main() {
 
 	gin.DisableConsoleColor()
@@ -28,17 +29,20 @@ func main() {
 
 	{
 		api := router.Group("api")
-		
 		api.POST("/register", handlers.Register)
 		api.POST("/login", handlers.Login)
-		api.DELETE("/delete/:id", handlers.DeleteUser)
-		api.GET("/users", handlers.FetchUsers)
-		api.GET("/users/:id", handlers.FetchUser)
 
+		files := api.Group("/files")
+		files.Use(auth.AuthMiddleware())
+		files.POST("/upload", handlers.PostFile)
+		files.GET("/:id", handlers.GetFile)
+		files.GET("/", handlers.GetAllFile)
 
-		api.POST("/upload", handlers.PostFile)
-		api.GET("/files/:id", handlers.GetFile)
-		api.GET("/files", handlers.GetAllFile)
+		users := api.Group("/users")
+		users.Use(auth.AuthMiddleware())
+		users.GET("/", handlers.FetchUsers)
+		users.GET("/:id", handlers.FetchUser)
+		users.DELETE("/delete/:id", handlers.DeleteUser)
 
 	}
 
@@ -46,7 +50,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-
 
 	fmt.Printf(" server running on port %s", os.Getenv(port))
 	router.Run(":" + port)

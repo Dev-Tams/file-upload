@@ -29,7 +29,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "user@test1.com",
+  "email": "user@test2.com",
   "password": "yourpassword"
 }
 
@@ -39,7 +39,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "user@test1.com",
+  "email": "user@test2.com",
   "password": "yourpassword"
 }
 
