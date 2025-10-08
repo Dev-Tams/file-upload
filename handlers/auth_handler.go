@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/dev-tams/file-upload/actions"
+	"github.com/dev-tams/file-upload/auth"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
 	"github.com/gin-gonic/gin"
@@ -15,13 +16,13 @@ func Register(c *gin.Context) {
 	var user models.User
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid JSON format",
+			"error":   "Invalid JSON format",
 			"details": err.Error(),
 		})
 		return
 	}
 
-	if !actions.IsValidEmail(user.Email)  {
+	if !actions.IsValidEmail(user.Email) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email format"})
 		return
 	}
@@ -31,7 +32,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	id  := uuid.New().String()
+	id := uuid.New().String()
 	var existingUser models.User
 	if err := config.DB.Select("id").Where("email = ?", user.Email).First(&existingUser).Error; err == nil {
 		c.JSON(http.StatusConflict, gin.H{
@@ -62,32 +63,42 @@ func Register(c *gin.Context) {
 
 }
 
-
-func Login(c *gin.Context){
+func Login(c *gin.Context) {
 	var creds models.User
 	var user models.User
-	if err := c.BindJSON(&creds); err != nil{
+	if err := c.BindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"err" : "invalid json format",
-			"details" : err.Error(),
+			"err":     "invalid json format",
+			"details": err.Error(),
 		})
 	}
 
-	if err := config.DB.Where("email = ?", creds.Email).First(&user).Error; err != nil{
+	if err := config.DB.Where("email = ?", creds.Email).First(&user).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid credentials",
-			"details" : err.Error(),
+			"error":   "invalid credentials",
+			"details": err.Error(),
 		})
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password)); err != nil{
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid credentials",
-			"details" : err.Error(),
+			"error":   "invalid credentials",
+			"details": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "logged in"})
+	token, err := auth.GenerateToken(user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"err":     "unable to generate token",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"token": token,
+	})
 }
