@@ -7,6 +7,14 @@ Content-Type: application/json
 }
 
 ###
+GET http://127.0.0.1:8000/api/users/97a1c076-aa6e-4ac9-aed3-916a1fbd6b33
+Accept: application/json
+Content-Type: application/json
+
+{
+
+}
+###
 GET http://127.0.0.1:8000/api/files
 Accept: application/json
 Content-Type: application/json
@@ -21,7 +29,17 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "user",
+  "email": "user@teest.com",
+  "password": "yourpassword"
+}
+
+###
+POST  http://127.0.0.1:8000/api/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "user@teest.com",
   "password": "yourpassword"
 }
 

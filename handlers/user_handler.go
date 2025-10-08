@@ -34,7 +34,7 @@ func FetchUser( c *gin.Context) {
 		})
 		return
 	}
-	if err := config.DB.Find(&user.ID).Error; err != nil{
+	if err := config.DB.Find(&user).Error; err != nil{
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"err" : err.Error(),
 		})

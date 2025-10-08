@@ -61,3 +61,33 @@ func Register(c *gin.Context) {
 	})
 
 }
+
+
+func Login(c *gin.Context){
+	var creds models.User
+	var user models.User
+	if err := c.BindJSON(&creds); err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err" : "invalid json format",
+			"details" : err.Error(),
+		})
+	}
+
+	if err := config.DB.Where("email = ?", creds.Email).First(&user).Error; err != nil{
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "invalid credentials",
+			"details" : err.Error(),
+		})
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password)); err != nil{
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "invalid credentials",
+			"details" : err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "logged in"})
+}
