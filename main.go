@@ -5,9 +5,9 @@ import (
 	"io"
 	"os"
 
+	"github.com/dev-tams/file-upload/auth"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/handlers"
-	"github.com/dev-tams/go-auth/auth"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -33,13 +33,13 @@ func main() {
 		api.POST("/login", handlers.Login)
 
 		files := api.Group("/files")
-		files.Use(auth.AuthMiddleware())
+		files.Use(auth.Middleware())
 		files.POST("/upload", handlers.PostFile)
 		files.GET("/:id", handlers.GetFile)
 		files.GET("/", handlers.GetAllFile)
 
 		users := api.Group("/users")
-		users.Use(auth.AuthMiddleware())
+		users.Use(auth.Middleware())
 		users.GET("/", handlers.FetchUsers)
 		users.GET("/:id", handlers.FetchUser)
 		users.DELETE("/delete/:id", handlers.DeleteUser)
