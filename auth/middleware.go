@@ -7,21 +7,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Middleware() gin.HandlerFunc{
+func Middleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"error" : "authorization header missing", 
+				"error": "authorization header missing",
 			})
 			ctx.Abort()
-			return 
+			return
 		}
-		tokenString := strings.TrimPrefix(authHeader, "Bearer")
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		tokenString = strings.TrimSpace(tokenString)
+
 		claims, err := ValidateToken(tokenString)
-		if err != nil{
+		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"error": "invalid or expired token", 
+				"error": "invalid or expired token",
 			})
 			ctx.Abort()
 			return
