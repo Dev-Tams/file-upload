@@ -43,26 +43,17 @@ func GetFile(c *gin.Context) {
 
 func GetAllFile(c *gin.Context) {
 
+	userID := c.GetString("user_id")
 	var files []models.File
-	if err := config.DB.Find(&files).Error; err != nil {
+	db := config.DB.Where("user_id= ?", userID).Find(&files)
+	pagination, err := actions.Paginate(c, db, files)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch files"})
 		return
 	}
 
-	var fileList []gin.H
-	for _, f := range files {
-		fileList = append(fileList, gin.H{
-			"id":           f.ID,
-			"originalName": f.OriginalName,
-			"size":         f.Size,
-			"displayName":  f.DisplayName,
-			"path":         f.Path,
-			"uploadedAt":   f.UploadedAt,
-		})
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"files": fileList,
+		"files": pagination,
 	})
 }
 
