@@ -11,5 +11,7 @@ type File struct {
 	DisplayName  string        
 	UploadedAt   time.Time       
 	Size        int64          
-	Path        string
+	Path        string 			`gorm:"not null;"`
+	UserID     string 			`gorm:"not null;index"`
+	User        User           `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

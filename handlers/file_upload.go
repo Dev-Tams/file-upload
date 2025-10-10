@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
+	dto "github.com/dev-tams/file-upload/DTO"
 	"github.com/dev-tams/file-upload/actions"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
@@ -19,15 +20,12 @@ func GetFile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
 		return
 	}
-
 	var file models.File
-	// if err := config.DB.First(&files, ID); err != nil{
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding file"})
-	// 	return
-	// }
 
-	if err := config.DB.Where("id = ?", ID).First(&file).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "error finding file in db"})
+	userID := c.GetString("user_id")
+
+	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).Preload("user").First(&file).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Note not found"})
 		return
 	}
 
@@ -38,15 +36,11 @@ func GetFile(c *gin.Context) {
 	}
 
 	// Serve the file
-	c.File(filePath)
+	fileDto := dto.FromFileModel(file)
+	c.JSON(http.StatusOK, gin.H{"file": fileDto})
 
 }
 
-// Scan the uploads/ folder.
-
-// Collect file metadata (e.g., name, size, modified time).
-
-// Return as a JSON array.
 func GetAllFile(c *gin.Context) {
 
 	var files []models.File
@@ -73,7 +67,7 @@ func GetAllFile(c *gin.Context) {
 }
 
 func PostFile(c *gin.Context) {
-	form, err:= c.MultipartForm()
+	form, err := c.MultipartForm()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -85,7 +79,7 @@ func PostFile(c *gin.Context) {
 		return
 	}
 
-	var uploadedFiles []models.File
+	var uploadedFiles []dto.FileResponseDTO
 
 	for _, file := range multipleFiles {
 		id := uuid.New().String()
@@ -103,6 +97,7 @@ func PostFile(c *gin.Context) {
 			return
 		}
 
+		userID := c.GetString("user_id")
 		uploadedFile := models.File{
 			ID:           id,
 			StoredName:   storedName,
@@ -111,6 +106,7 @@ func PostFile(c *gin.Context) {
 			UploadedAt:   time.Now(),
 			Size:         file.Size,
 			Path:         savedPath,
+			UserID:       userID,
 		}
 
 		if err := config.DB.Create(&uploadedFile).Error; err != nil {
@@ -118,12 +114,17 @@ func PostFile(c *gin.Context) {
 			return
 		}
 
-		uploadedFiles = append(uploadedFiles, uploadedFile)
+		if err := config.DB.Preload("User").First(&uploadedFile, "id = ?", uploadedFile.ID).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load user info"})
+			return
+		}
+		fileDto := dto.FromFileModel(uploadedFile)
+		uploadedFiles = append(uploadedFiles, fileDto)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Files uploaded successfully!",
-		"files":   uploadedFiles, // return all files, not just the last one
+		"files":   uploadedFiles,
 	})
 }
 
