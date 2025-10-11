@@ -53,18 +53,18 @@ func DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 
 	if err := config.DB.Where("id = ? ", id).First(&user).Error; err != nil {
-		c.JSONP(http.StatusNotAcceptable, gin.H{
+		c.JSON(http.StatusNotAcceptable, gin.H{
 			"error":   "user not found",
 			"details": err.Error(),
 		})
 		return
 	}
 	if err := config.DB.Delete(&user).Error; err != nil {
-		c.JSONP(http.StatusNotAcceptable, gin.H{
+		c.JSON(http.StatusNotAcceptable, gin.H{
 			"error":   "failed to delete user",
 			"details": err.Error(),
 		})
 	}
 
-	c.JSONP(http.StatusNoContent, gin.H{})
+	c.Status(http.StatusNoContent)
 }

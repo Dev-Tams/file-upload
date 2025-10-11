@@ -25,7 +25,7 @@ func GetFile(c *gin.Context) {
 	userID := c.GetString("user_id")
 
 	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).Preload("user").First(&file).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Note not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
 		return
 	}
 
@@ -45,15 +45,14 @@ func GetAllFile(c *gin.Context) {
 
 	userID := c.GetString("user_id")
 	var files []models.File
-	db := config.DB.Where("user_id= ?", userID).Find(&files)
-	pagination, err := actions.Paginate(c, db, files)
-	if err != nil {
+	if err := config.DB.Where("user_id= ?", userID).Find(&files).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch files"})
 		return
 	}
+	// pagination, err := actions.Paginate(c, db, files) 
 
 	c.JSON(http.StatusOK, gin.H{
-		"files": pagination,
+		"files": files,
 	})
 }
 
@@ -117,6 +116,36 @@ func PostFile(c *gin.Context) {
 		"message": "Files uploaded successfully!",
 		"files":   uploadedFiles,
 	})
+}
+
+
+func DeleteFile(ctx *gin.Context){
+		var file models.File
+
+	ID := ctx.Param("id")
+	if ID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+		return
+	}
+	userID := ctx.GetString("user_id")
+
+	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).First(&file).Error; err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"details": err.Error(),
+		})
+		return
+	}
+
+	if err := config.DB.Delete(&file).Error; err != nil {
+		ctx.JSONP(http.StatusNotAcceptable, gin.H{
+			"error":   "failed to delete file",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
+	
 }
 
 // func FormatFile(path string) (newPath string, err error) {

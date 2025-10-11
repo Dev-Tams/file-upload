@@ -34,9 +34,10 @@ func main() {
 
 		files := api.Group("/files")
 		files.Use(auth.Middleware())
-		files.POST("/upload", handlers.PostFile)
-		files.GET("/:id", handlers.GetFile)
 		files.GET("/", handlers.GetAllFile)
+		files.GET("/:id", handlers.GetFile)
+		files.POST("/upload", handlers.PostFile)
+		files.DELETE("/delete/:id", handlers.DeleteFile)
 
 		users := api.Group("/users")
 		users.Use(auth.Middleware())

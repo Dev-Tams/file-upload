@@ -1,15 +1,17 @@
 GET http://127.0.0.1:8000/api/users
 Accept: application/json
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDNlNjdiNjUtMWYzZC00YWIyLTgzOTItMzYyMTFiNDNkZTRlIiwiZXhwIjoxNzYwMjg4MTg3fQ.O-QJZDoBClG_FMIfmKq6v2nww9KXqmE7_S9p01Nnvwo
 
 {
 
 }
 
 ###
-GET http://127.0.0.1:8000/api/users/97a1c076-aa6e-4ac9-aed3-916a1fbd6b33
+GET http://127.0.0.1:8000/api/users/e7b01b8b-42a7-43d3-a1a0-c9c8c80fa213
 Accept: application/json
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDNlNjdiNjUtMWYzZC00YWIyLTgzOTItMzYyMTFiNDNkZTRlIiwiZXhwIjoxNzYwMjg4MTg3fQ.O-QJZDoBClG_FMIfmKq6v2nww9KXqmE7_S9p01Nnvwo
 
 {
 
@@ -18,6 +20,7 @@ Content-Type: application/json
 GET http://127.0.0.1:8000/api/files
 Accept: application/json
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMjkxMDc5fQ.FRY6q058HT9Y8T8qpq1aqeUCdl3eCJHmZ6yGVHJAoN4
 
 {
 
@@ -39,10 +42,29 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "user@test2.com",
-  "password": "yourpassword"
+  "email": "test@mail.com",
+  "password": "123456"
 }
 
 ###
-DELETE  http://127.0.0.1:8000/api/delete/5df10960-8ce2-45ea-8fef-ba8a7603c291
+POST  http://127.0.0.1:8000/api/files/upload
+Accept: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDNlNjdiNjUtMWYzZC00YWIyLTgzOTItMzYyMTFiNDNkZTRlIiwiZXhwIjoxNzYwMjg4MTg3fQ.O-QJZDoBClG_FMIfmKq6v2nww9KXqmE7_S9p01Nnvwo
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="robot.png"
+Content-Type: image/png
+
+< ./robot.png
+--boundary--
+
+###
+GET  http://127.0.0.1:8000/api/files/8b958a87-41db-447f-bd75-7a08a6e63fb5
+Accept: application/json
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMjkxMDc5fQ.FRY6q058HT9Y8T8qpq1aqeUCdl3eCJHmZ6yGVHJAoN4
+
+###
+DELETE  http://127.0.0.1:8000/api/files/delete/8b958a87-41db-447f-bd75-7a08a6e63fb5
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMjkxMDc5fQ.FRY6q058HT9Y8T8qpq1aqeUCdl3eCJHmZ6yGVHJAoN4
 Content-Type: application/json
