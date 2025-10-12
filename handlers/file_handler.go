@@ -44,15 +44,15 @@ func GetFile(c *gin.Context) {
 func GetAllFile(c *gin.Context) {
 
 	userID := c.GetString("user_id")
-	var files []models.File
-	if err := config.DB.Where("user_id= ?", userID).Find(&files).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not fetch files"})
+	db := config.DB.Where("user_id = ?", userID).Order("uploaded_at DESC")
+	pagination, err := actions.Paginate(c, db, &models.File{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "pagination error"})
 		return
 	}
-	// pagination, err := actions.Paginate(c, db, files) 
 
 	c.JSON(http.StatusOK, gin.H{
-		"files": files,
+		"files": pagination,
 	})
 }
 
@@ -118,9 +118,8 @@ func PostFile(c *gin.Context) {
 	})
 }
 
-
-func DeleteFile(ctx *gin.Context){
-		var file models.File
+func DeleteFile(ctx *gin.Context) {
+	var file models.File
 
 	ID := ctx.Param("id")
 	if ID == "" {
@@ -145,7 +144,7 @@ func DeleteFile(ctx *gin.Context){
 	}
 
 	ctx.Status(http.StatusNoContent)
-	
+
 }
 
 // func FormatFile(path string) (newPath string, err error) {
