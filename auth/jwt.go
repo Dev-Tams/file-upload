@@ -21,11 +21,11 @@ type Req struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func GenerateToken(userID string, userRole string) (string, error) {
+func GenerateToken(userID string, Role string) (string, error) {
 
 	claims := Claims{
 		UserID: userID,
-		Role:   userRole,
+		Role:   Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 		},

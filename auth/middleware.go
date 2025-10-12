@@ -30,6 +30,7 @@ func Middleware() gin.HandlerFunc {
 		}
 
 		ctx.Set("user_id", claims.UserID)
+		ctx.Set("role", claims.Role)
 		ctx.Next()
 	}
 }
