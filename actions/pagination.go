@@ -16,7 +16,7 @@ type Pagination struct {
 	TotalPages int         `json:"totalPages"`
 	NextPage   string      `json:"nextPage,omitempty"`
 	PrevPage   string      `json:"prevPage,omitempty"`
-	Data       interface{} `json:"data"`
+	Data       any 			`json:"data"`
 }
 
 func Paginate[T any](c *gin.Context, db *gorm.DB, model T) (Pagination, error) {

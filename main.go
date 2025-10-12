@@ -8,6 +8,7 @@ import (
 	"github.com/dev-tams/file-upload/auth"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/handlers"
+	"github.com/dev-tams/file-upload/handlers/admin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -39,11 +40,18 @@ func main() {
 		files.POST("/upload", handlers.PostFile)
 		files.DELETE("/delete/:id", handlers.DeleteFile)
 
-		users := api.Group("/users")
-		users.Use(auth.Middleware())
-		users.GET("/", handlers.FetchUsers)
-		users.GET("/:id", handlers.FetchUser)
-		users.DELETE("/delete/:id", handlers.DeleteUser)
+
+		adminRoutes := api.Group("/admin")
+		adminRoutes.Use(auth.Middleware(), auth.AdminOnly())
+		{
+			adminRoutes.GET("/files", admin.GetAllFiles)
+			adminRoutes.GET("/files/:id", admin.GetFile)
+			adminRoutes.DELETE("/files/:id", admin.DeleteFile)
+
+			adminRoutes.GET("/users", admin.FetchUsers)
+			adminRoutes.GET("/users:id", admin.FetchUser)
+			adminRoutes.DELETE("/users/:id", admin.DeleteUser)
+		}
 
 	}
 

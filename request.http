@@ -1,7 +1,7 @@
-GET http://127.0.0.1:8000/api/users
+GET http://127.0.0.1:8000/api/admin/users
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDNlNjdiNjUtMWYzZC00YWIyLTgzOTItMzYyMTFiNDNkZTRlIiwiZXhwIjoxNzYwMjg4MTg3fQ.O-QJZDoBClG_FMIfmKq6v2nww9KXqmE7_S9p01Nnvwo
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwMzg5MTM5fQ.DW_X5JxqrZUA82FSSpiY8tmRdw2xaS87HLY-fKwUrmM
 
 {
 
@@ -20,7 +20,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDNlNjdiNjUt
 GET http://127.0.0.1:8000/api/files
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMjkxMDc5fQ.FRY6q058HT9Y8T8qpq1aqeUCdl3eCJHmZ6yGVHJAoN4
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMzgzMTkyfQ.wJjtEw_c8qh33iKY542H_IrmNFHLmzFZgKf7mpkUK5c
 
 {
 
@@ -32,8 +32,9 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "user@test2.com",
-  "password": "yourpassword"
+  "email": "tami@mail.com",
+  "password": "tamipassword",
+  "role" : "admin"
 }
 
 ###
@@ -42,27 +43,15 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "test@mail.com",
-  "password": "123456"
+  "email": "tami@mail.com",
+  "password": "tamipassword"
 }
-
-###
-POST  http://127.0.0.1:8000/api/files/upload
-Accept: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDNlNjdiNjUtMWYzZC00YWIyLTgzOTItMzYyMTFiNDNkZTRlIiwiZXhwIjoxNzYwMjg4MTg3fQ.O-QJZDoBClG_FMIfmKq6v2nww9KXqmE7_S9p01Nnvwo
-
---boundary
-Content-Disposition: form-data; name="file"; filename="robot.png"
-Content-Type: image/png
-
-< ./robot.png
---boundary--
 
 ###
 GET  http://127.0.0.1:8000/api/files/8b958a87-41db-447f-bd75-7a08a6e63fb5
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMjkxMDc5fQ.FRY6q058HT9Y8T8qpq1aqeUCdl3eCJHmZ6yGVHJAoN4
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMzgzMTkyfQ.wJjtEw_c8qh33iKY542H_IrmNFHLmzFZgKf7mpkUK5c
 
 ###
 DELETE  http://127.0.0.1:8000/api/files/delete/8b958a87-41db-447f-bd75-7a08a6e63fb5
