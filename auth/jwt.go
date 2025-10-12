@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -14,6 +13,7 @@ var jwtSecret = os.Getenv("JWT_SECRET")
 
 type Claims struct {
 	UserID string `json:"user_id"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -21,10 +21,11 @@ type Req struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func GenerateToken(userID string) (string, error) {
+func GenerateToken(userID string, userRole string) (string, error) {
 
 	claims := Claims{
 		UserID: userID,
+		Role:   userRole,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 		},
@@ -63,7 +64,7 @@ func RefreshToken(c *gin.Context) {
 		return
 	}
 
-	newToken, err := GenerateToken(claims.UserID)
+	newToken, err := GenerateToken(claims.UserID, claims.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

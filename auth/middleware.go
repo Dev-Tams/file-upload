@@ -33,3 +33,20 @@ func Middleware() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+func AdminOnly() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		claims, exists := c.Get("claims")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing claims"})
+			return
+		}
+
+		userClaims := claims.(*Claims)
+		if userClaims.Role != "admin" {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "admin access required"})
+			return
+		}
+
+		c.Next()
+	}
+}
