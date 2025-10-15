@@ -14,13 +14,19 @@ import (
 
 func GetFile(c *gin.Context) {
 	ID := c.Param("id")
-	if ID == "" {
+	userID := c.Param("user_id")
+
+	switch {
+	case ID == "":
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+		return
+	case userID == "":
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
 		return
 	}
 	var file models.File
 
-	if err := config.DB.Preload("user").First(&file, "id = ?", ID).Error; err != nil {
+	if err := config.DB.Where("user_id = ? AND id = ?", userID, ID).Preload("User").First(&file).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
 		return
 	}
@@ -38,10 +44,21 @@ func GetFile(c *gin.Context) {
 }
 
 func GetAllFiles(ctx *gin.Context) {
-	db := config.DB.Order("uploaded_at DESC")
+
+	userID := ctx.Param("user_id")
+	if userID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"err" : "user id required",
+		})
+	}
+
+	db := config.DB.Where("id = ?", userID).Order("uploaded_at DESC").Preload("User")
 	pagination, err := actions.Paginate(ctx, db, &models.File{})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "pagination error"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "pagination error",
+			"details": err.Error(),
+		})
 		return
 	}
 
@@ -49,7 +66,6 @@ func GetAllFiles(ctx *gin.Context) {
 		"files": pagination,
 	})
 }
-
 
 func DeleteFile(ctx *gin.Context) {
 	var file models.File
@@ -60,7 +76,7 @@ func DeleteFile(ctx *gin.Context) {
 		return
 	}
 
-	if err := config.DB.Preload("user").First(&file, "id = ?", ID).Error; err != nil {
+	if err := config.DB.Preload("User").First(&file, "id = ?", ID).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"details": err.Error(),
 		})

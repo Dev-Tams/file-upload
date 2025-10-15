@@ -24,7 +24,7 @@ func GetFile(c *gin.Context) {
 
 	userID := c.GetString("user_id")
 
-	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).Preload("user").First(&file).Error; err != nil {
+	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).Preload("User").First(&file).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
 		return
 	}

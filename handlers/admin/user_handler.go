@@ -16,9 +16,10 @@ func FetchUsers(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
 	}
 
+	
 	c.JSON(http.StatusOK, gin.H{
 		"message": "All users from DB",
-		"data":    users,
+		"data":   users,
 	})
 
 }
@@ -26,8 +27,8 @@ func FetchUsers(c *gin.Context) {
 func FetchUser( c *gin.Context) {
 	var user models.User
 
-	id  := c.Param("id")
-	if err := config.DB.Where(" id = ?", id).First(&user).Error; err != nil{
+	userID  := c.Param("user_id")
+	if err := config.DB.Where("id = ?", userID).First(&user).Error; err != nil{
 		c.JSON(http.StatusNotFound, gin.H{
 			"err": err.Error(),
 		})
@@ -41,7 +42,10 @@ func FetchUser( c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"user" : user,
+		"id" : user.ID,
+		"email" : user.Email,
+		"role" : user.Role,
+
 	})
 
 }
@@ -49,9 +53,9 @@ func DeleteUser(c *gin.Context) {
 
 	var user models.User
 
-	id := c.Param("id")
+	userID := c.Param("user_id")
 
-	if err := config.DB.Where("id = ? ", id).First(&user).Error; err != nil {
+	if err := config.DB.Where("id = ? ", userID).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotAcceptable, gin.H{
 			"error":   "user not found",
 			"details": err.Error(),
