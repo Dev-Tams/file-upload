@@ -44,13 +44,14 @@ func main() {
 		adminRoutes := api.Group("/admin")
 		adminRoutes.Use(auth.Middleware(), auth.AdminOnly())
 		{
-			adminRoutes.GET("/files", admin.GetAllFiles)
-			adminRoutes.GET("/files/:id", admin.GetFile)
-			adminRoutes.DELETE("/files/:id", admin.DeleteFile)
-
 			adminRoutes.GET("/users", admin.FetchUsers)
-			adminRoutes.GET("/users:id", admin.FetchUser)
-			adminRoutes.DELETE("/users/:id", admin.DeleteUser)
+			adminRoutes.GET("/users/:user_id", admin.FetchUser)
+			adminRoutes.DELETE("/users/:user_id", admin.DeleteUser)
+
+			adminRoutes.GET("/users/:user_id/files", admin.GetAllFiles)
+			adminRoutes.GET("/users/:user_id/files/:id", admin.GetFile)
+			adminRoutes.DELETE("/users/:user_id/files/:id", admin.DeleteFile)
+
 		}
 
 	}
