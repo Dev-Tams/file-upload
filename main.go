@@ -37,6 +37,7 @@ func main() {
 		files.Use(auth.Middleware())
 		files.GET("/", handlers.GetAllFile)
 		files.GET("/:id", handlers.GetFile)
+		files.GET("/:id/download", handlers.DownloadFile)
 		files.POST("/upload", handlers.PostFile)
 		files.DELETE("/delete/:id", handlers.DeleteFile)
 
@@ -50,6 +51,7 @@ func main() {
 
 			adminRoutes.GET("/users/:user_id/files", admin.GetAllFiles)
 			adminRoutes.GET("/users/:user_id/files/:id", admin.GetFile)
+			adminRoutes.GET("/users/:user_id/files/:id/download", admin.DownloadFile)
 			adminRoutes.DELETE("/users/:user_id/files/:id", admin.DeleteFile)
 
 		}

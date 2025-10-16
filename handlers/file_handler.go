@@ -136,6 +136,23 @@ func PostFile(c *gin.Context) {
 	})
 }
 
+func DownloadFile(ctx *gin.Context){
+	var file models.File
+
+	filePath :=  filepath.Join("uploads", file.StoredName)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
+	}
+
+	ctx.Header("Content-Description", "File Transfer")
+    ctx.Header("Content-Transfer-Encoding", "binary")
+    ctx.Header("Content-Disposition", "attachment; filename="+filepath.Base(filePath))
+    ctx.Header("Content-Type", "application/octet-stream")
+
+    ctx.File(filePath)
+}
+
+
 func DeleteFile(ctx *gin.Context) {
 	var file models.File
 
