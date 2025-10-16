@@ -12,34 +12,34 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetFile(c *gin.Context) {
-	ID := c.Param("id")
-	userID := c.Param("user_id")
+func GetFile(ctx *gin.Context) {
+	ID := ctx.Param("id")
+	userID := ctx.Param("user_id")
 
 	switch {
 	case ID == "":
-		c.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
 		return
 	case userID == "":
-		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
 		return
 	}
 	var file models.File
 
 	if err := config.DB.Where("user_id = ? AND id = ?", userID, ID).Preload("User").First(&file).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
 		return
 	}
 
 	filePath := filepath.Join("uploads", file.StoredName)
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		c.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
 	}
 
 	// Serve the file
 	fileDto := dto.FromFileModel(file)
-	c.JSON(http.StatusOK, gin.H{"file": fileDto})
+	ctx.JSON(http.StatusOK, gin.H{"file": fileDto})
 
 }
 
@@ -48,24 +48,45 @@ func GetAllFiles(ctx *gin.Context) {
 	userID := ctx.Param("user_id")
 	if userID == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"err" : "user id required",
+			"err": "user id required",
 		})
 	}
 
-	db := config.DB.Where("id = ?", userID).Order("uploaded_at DESC").Preload("User")
+	var files []models.File
+	db := config.DB.Where("user_id = ?", userID).
+	Order("uploaded_at DESC").
+	Preload("User")
+	
 	pagination, err := actions.Paginate(ctx, db, &models.File{})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "pagination error",
-			"details": err.Error(),
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "pagination error"})
 		return
 	}
+	
+	files, ok := pagination.Data.([]models.File)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "type assertion failed"})
+		return
+	}
+	fileDto := dto.FromFileModels(files)
+	pagination.Data = fileDto
+
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"files": pagination,
+		"files": gin.H{
+		"page":        pagination.Page,
+		"limit":       pagination.Limit,
+		"total":       pagination.Total,
+		"totalPages":  pagination.TotalPages,
+		"nextPage":    pagination.NextPage,
+		"prevPage":    pagination.PrevPage,
+		"data":        fileDto,
+	},
 	})
 }
+
+
+
 
 func DeleteFile(ctx *gin.Context) {
 	var file models.File

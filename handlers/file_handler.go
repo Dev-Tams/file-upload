@@ -44,15 +44,33 @@ func GetFile(c *gin.Context) {
 func GetAllFile(c *gin.Context) {
 
 	userID := c.GetString("user_id")
-	db := config.DB.Where("user_id = ?", userID).Order("uploaded_at DESC")
+	db := config.DB.Where("user_id = ?", userID).Order("uploaded_at DESC").Preload("User")
+
+	
 	pagination, err := actions.Paginate(c, db, &models.File{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "pagination error"})
 		return
 	}
 
+	files, ok := pagination.Data.([]models.File)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "type assertion failed"})
+		return
+	}
+	fileDto := dto.FromFileModels(files)
+	pagination.Data = fileDto
+
 	c.JSON(http.StatusOK, gin.H{
-		"files": pagination,
+		"files": gin.H{
+		"page":        pagination.Page,
+		"limit":       pagination.Limit,
+		"total":       pagination.Total,
+		"totalPages":  pagination.TotalPages,
+		"nextPage":    pagination.NextPage,
+		"prevPage":    pagination.PrevPage,
+		"data":        fileDto,
+	},
 	})
 }
 
