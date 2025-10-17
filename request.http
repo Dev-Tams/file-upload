@@ -1,59 +1,112 @@
+###
+Admin Routes 
+
+###
 GET http://127.0.0.1:8000/api/admin/users
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwMzg5MTM5fQ.DW_X5JxqrZUA82FSSpiY8tmRdw2xaS87HLY-fKwUrmM
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
 
 {
 
 }
 
 ###
-GET http://127.0.0.1:8000/api/users/e7b01b8b-42a7-43d3-a1a0-c9c8c80fa213
+GET http://127.0.0.1:8000/api/admin/users/da44ec4c-b6f8-41fb-af2d-50a91b1fdbdc
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDNlNjdiNjUtMWYzZC00YWIyLTgzOTItMzYyMTFiNDNkZTRlIiwiZXhwIjoxNzYwMjg4MTg3fQ.O-QJZDoBClG_FMIfmKq6v2nww9KXqmE7_S9p01Nnvwo
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
 
 {
 
 }
+###
+DELETE http://127.0.0.1:8000/api/admin/users/da44ec4c-b6f8-41fb-af2d-50a91b1fdbdc
+Accept: application/json
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+
+{
+
+}
+###
+
+###
+GET http://127.0.0.1:8000/api/admin/users/da44ec4c-b6f8-41fb-af2d-50a91b1fdbdc/files
+Accept: application/json
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+
+{
+
+}
+###
+GET http://127.0.0.1:8000/api/admin/users/da44ec4c-b6f8-41fb-af2d-50a91b1fdbdc/files/fc2f29c8-cf21-4587-88c4-5049536fc180
+Accept: application/json
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+
+{
+
+}
+
+###
+GET http://127.0.0.1:8000/api/admin/users/da44ec4c-b6f8-41fb-af2d-50a91b1fdbdc/files/fc2f29c8-cf21-4587-88c4-5049536fc180/download
+Accept: application/json
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+
+{
+
+}
+
+###
+DELETE  http://127.0.0.1:8000/api/admin/users/da44ec4c-b6f8-41fb-af2d-50a91b1fdbdc/files/fc2f29c8-cf21-4587-88c4-5049536fc180
+Accept: application/json
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+
+{
+
+}
+
+###
+User Routes
 ###
 GET http://127.0.0.1:8000/api/files
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMzgzMTkyfQ.wJjtEw_c8qh33iKY542H_IrmNFHLmzFZgKf7mpkUK5c
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+
+{
+
+}
+###
+GET http://127.0.0.1:8000/api/files/8014065b-a049-443d-a252-31b034ecb539
+Accept: application/json
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
 
 {
 
 }
 
 ###
-POST  http://127.0.0.1:8000/api/register
+GET http://127.0.0.1:8000/api/files/fc2f29c8-cf21-4587-88c4-5049536fc180/download
 Accept: application/json
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
 
 {
-  "email": "tami@mail.com",
-  "password": "tamipassword",
-  "role" : "admin"
+
 }
 
 ###
-POST  http://127.0.0.1:8000/api/login
+DELETE  http://127.0.0.1:8000/api/files/delete/fc2f29c8-cf21-4587-88c4-5049536fc180
 Accept: application/json
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
 
 {
-  "email": "tami@mail.com",
-  "password": "tamipassword"
+
 }
-
-###
-GET  http://127.0.0.1:8000/api/files/8b958a87-41db-447f-bd75-7a08a6e63fb5
-Accept: application/json
-Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMzgzMTkyfQ.wJjtEw_c8qh33iKY542H_IrmNFHLmzFZgKf7mpkUK5c
-
-###
-DELETE  http://127.0.0.1:8000/api/files/delete/8b958a87-41db-447f-bd75-7a08a6e63fb5
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwiZXhwIjoxNzYwMjkxMDc5fQ.FRY6q058HT9Y8T8qpq1aqeUCdl3eCJHmZ6yGVHJAoN4
-Content-Type: application/json

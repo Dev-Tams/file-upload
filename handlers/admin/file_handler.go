@@ -50,6 +50,7 @@ func GetAllFiles(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"err": "user id required",
 		})
+		return
 	}
 
 	var files []models.File
@@ -87,31 +88,48 @@ func GetAllFiles(ctx *gin.Context) {
 
 
 func DownloadFile(ctx *gin.Context){
+	id := ctx.Param("id")
+    userID := ctx.Param("user_id") 
+
+    switch {
+	case id == "" :
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+        return
+	case userID == "":
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
+        return
+	}
 	var file models.File
 
-	filePath :=  filepath.Join("uploads", file.StoredName)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
-	}
+	if err := config.DB.Where("user_id = ? AND id = ?", userID, id).First(&file).Error; err != nil {
+        ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
+        return
+    }
+	filePath := filepath.Join("uploads", file.StoredName)
+    if _, err := os.Stat(filePath); os.IsNotExist(err) {
+        ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found on disk"})
+        return
+    }
 
-	ctx.Header("Content-Description", "File Transfer")
-    ctx.Header("Content-Transfer-Encoding", "binary")
-    ctx.Header("Content-Disposition", "attachment; filename="+filepath.Base(filePath))
-    ctx.Header("Content-Type", "application/octet-stream")
-
-    ctx.File(filePath)
+    ctx.FileAttachment(filePath, file.OriginalName)
 }
 
 func DeleteFile(ctx *gin.Context) {
 	var file models.File
 
 	ID := ctx.Param("id")
-	if ID == "" {
+	userID := ctx.Param("user_id")
+	
+	switch {
+	case ID == "" :
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
-		return
+        return
+	case userID == "":
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
+        return
 	}
 
-	if err := config.DB.Preload("User").First(&file, "id = ?", ID).Error; err != nil {
+	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).First(&file).Error; err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"details": err.Error(),
 		})

@@ -35,11 +35,11 @@ func main() {
 
 		files := api.Group("/files")
 		files.Use(auth.Middleware())
+		files.POST("/upload", handlers.PostFile)
 		files.GET("/", handlers.GetAllFile)
 		files.GET("/:id", handlers.GetFile)
 		files.GET("/:id/download", handlers.DownloadFile)
-		files.POST("/upload", handlers.PostFile)
-		files.DELETE("/delete/:id", handlers.DeleteFile)
+		files.DELETE("/:id", handlers.DeleteFile)
 
 
 		adminRoutes := api.Group("/admin")

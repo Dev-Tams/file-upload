@@ -136,49 +136,59 @@ func PostFile(c *gin.Context) {
 	})
 }
 
-func DownloadFile(ctx *gin.Context){
+func DownloadFile(c *gin.Context){
+	ID := c.Param("id")
+
+	switch {
+	case ID == "" :
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID required"})
+        return
+	}
+	
+	userID := c.GetString("user_id")
 	var file models.File
 
-	filePath :=  filepath.Join("uploads", file.StoredName)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
-	}
+	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).First(&file).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
+        return
+    }
+	filePath := filepath.Join("uploads", file.StoredName)
+    if _, err := os.Stat(filePath); os.IsNotExist(err) {
+        c.JSON(http.StatusNotFound, gin.H{"error": "file not found on disk"})
+        return
+    }
 
-	ctx.Header("Content-Description", "File Transfer")
-    ctx.Header("Content-Transfer-Encoding", "binary")
-    ctx.Header("Content-Disposition", "attachment; filename="+filepath.Base(filePath))
-    ctx.Header("Content-Type", "application/octet-stream")
-
-    ctx.File(filePath)
+    c.FileAttachment(filePath, file.OriginalName)
 }
 
 
-func DeleteFile(ctx *gin.Context) {
+
+func DeleteFile(c *gin.Context) {
 	var file models.File
 
-	ID := ctx.Param("id")
+	ID := c.Param("id")
 	if ID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
 		return
 	}
-	userID := ctx.GetString("user_id")
+	userID := c.GetString("user_id")
 
 	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).First(&file).Error; err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"details": err.Error(),
 		})
 		return
 	}
 
 	if err := config.DB.Delete(&file).Error; err != nil {
-		ctx.JSONP(http.StatusNotAcceptable, gin.H{
+		c.JSONP(http.StatusNotAcceptable, gin.H{
 			"error":   "failed to delete file",
 			"details": err.Error(),
 		})
 		return
 	}
 
-	ctx.Status(http.StatusNoContent)
+	c.Status(http.StatusNoContent)
 
 }
 
