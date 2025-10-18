@@ -1,16 +1,19 @@
 package admin
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func PromoteToAdmin(ctx *gin.Context) {
@@ -35,15 +38,25 @@ func SeedAdminFromENV() {
 	email := os.Getenv("SUPER_ADMIN_EMAIL")
 	password := os.Getenv("SUPER_ADMIN_PASSWORD")
 
+	email = strings.TrimSpace(email)
+	password = strings.TrimSpace(strings.Trim(password, `"'`))
+
+
 	if email == "" || password == "" {
-		fmt.Println("super admin config not set")
+		fmt.Println("Missing SUPER_ADMIN_EMAIL or SUPER_ADMIN_PASSWORD in .env — skipping admin seeding")
+		return
 	}
 
 	var user models.User
 	id := uuid.New().String()
 
-	if err := config.DB.Where("email =?", email).First(&user).Error; err != nil {
-		fmt.Println(" super admin already exists")
+	err := config.DB.Where("email = ?", email).First(&user).Error
+	if err == nil {
+		fmt.Println("super admin already exists")
+		return
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		fmt.Println("error checking admin:", err)
 		return
 	}
 

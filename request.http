@@ -87,7 +87,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "email" : "test@mail2.com",
+    "email" : "tami@test.com",
     "password" : "1234567",
     "role" : "admin"
 }
