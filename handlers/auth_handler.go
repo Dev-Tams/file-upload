@@ -46,9 +46,13 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
 		return
 	}
-	user.Password = string(hash)
+	 user = models.User{
+		ID: id,
+		Email: user.Email,
+		Password: string(hash),
+		Role: "user",
+	 }
 
-	user.ID = id
 	if err := config.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "could not create user",
