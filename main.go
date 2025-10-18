@@ -1,8 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	"github.com/dev-tams/file-upload/auth"
@@ -23,7 +25,16 @@ func main() {
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f)
 
+	SeedAd := flag.Bool("seed-admin", false, "Run database seeding for the admin user.")
+	flag.Parse()
+
 	config.ConnectDatabase()
+	
+	if *SeedAd {
+		admin.SeedAdminFromENV()
+		log.Println("Admin user seeding complete. Exiting.")
+		return
+	}
 
 	router := gin.Default()
 	router.Use(cors.Default())
