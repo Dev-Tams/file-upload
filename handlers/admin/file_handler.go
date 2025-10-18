@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	dto "github.com/dev-tams/file-upload/DTO"
 	"github.com/dev-tams/file-upload/actions"
@@ -55,15 +56,15 @@ func GetAllFiles(ctx *gin.Context) {
 
 	var files []models.File
 	db := config.DB.Where("user_id = ?", userID).
-	Order("uploaded_at DESC").
-	Preload("User")
-	
-	pagination, err := actions.Paginate(ctx, db, &models.File{})
+		Order("uploaded_at DESC").
+		Preload("User")
+
+	pagination, err := actions.Paginate(ctx, db, models.File{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "pagination error"})
 		return
 	}
-	
+
 	files, ok := pagination.Data.([]models.File)
 	if !ok {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "type assertion failed"})
@@ -72,46 +73,49 @@ func GetAllFiles(ctx *gin.Context) {
 	fileDto := dto.FromFileModels(files)
 	pagination.Data = fileDto
 
-
 	ctx.JSON(http.StatusOK, gin.H{
 		"files": gin.H{
-		"page":        pagination.Page,
-		"limit":       pagination.Limit,
-		"total":       pagination.Total,
-		"totalPages":  pagination.TotalPages,
-		"nextPage":    pagination.NextPage,
-		"prevPage":    pagination.PrevPage,
-		"data":        fileDto,
-	},
+			"page":       pagination.Page,
+			"limit":      pagination.Limit,
+			"total":      pagination.Total,
+			"totalPages": pagination.TotalPages,
+			"nextPage":   pagination.NextPage,
+			"prevPage":   pagination.PrevPage,
+			"data":       fileDto,
+		},
 	})
 }
 
-
-func DownloadFile(ctx *gin.Context){
+func DownloadFile(ctx *gin.Context) {
 	id := ctx.Param("id")
-    userID := ctx.Param("user_id") 
+	userID := ctx.Param("user_id")
 
-    switch {
-	case id == "" :
+	switch {
+	case id == "":
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
-        return
+		return
 	case userID == "":
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
-        return
+		return
 	}
 	var file models.File
 
 	if err := config.DB.Where("user_id = ? AND id = ?", userID, id).First(&file).Error; err != nil {
-        ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
-        return
-    }
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
+		return
+	}
+	safePath := filepath.Clean(filepath.Join("uploads", file.StoredName))
+	if !strings.HasPrefix(safePath, "uploads") {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "invalid file path"})
+		return
+	}
 	filePath := filepath.Join("uploads", file.StoredName)
-    if _, err := os.Stat(filePath); os.IsNotExist(err) {
-        ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found on disk"})
-        return
-    }
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found on disk"})
+		return
+	}
 
-    ctx.FileAttachment(filePath, file.OriginalName)
+	ctx.FileAttachment(filePath, file.OriginalName)
 }
 
 func DeleteFile(ctx *gin.Context) {
@@ -119,14 +123,14 @@ func DeleteFile(ctx *gin.Context) {
 
 	ID := ctx.Param("id")
 	userID := ctx.Param("user_id")
-	
+
 	switch {
-	case ID == "" :
+	case ID == "":
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
-        return
+		return
 	case userID == "":
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
-        return
+		return
 	}
 
 	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).First(&file).Error; err != nil {

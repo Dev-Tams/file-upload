@@ -41,7 +41,6 @@ func main() {
 		files.GET("/:id/download", handlers.DownloadFile)
 		files.DELETE("/:id", handlers.DeleteFile)
 
-
 		adminRoutes := api.Group("/admin")
 		adminRoutes.Use(auth.Middleware(), auth.AdminOnly())
 		{
@@ -53,6 +52,8 @@ func main() {
 			adminRoutes.GET("/users/:user_id/files/:id", admin.GetFile)
 			adminRoutes.GET("/users/:user_id/files/:id/download", admin.DownloadFile)
 			adminRoutes.DELETE("/users/:user_id/files/:id", admin.DeleteFile)
+
+			adminRoutes.PUT("/users/:user_id", admin.PromoteToAdmin)
 
 		}
 

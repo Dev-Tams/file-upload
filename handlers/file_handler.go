@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	dto "github.com/dev-tams/file-upload/DTO"
@@ -46,8 +47,7 @@ func GetAllFile(c *gin.Context) {
 	userID := c.GetString("user_id")
 	db := config.DB.Where("user_id = ?", userID).Order("uploaded_at DESC").Preload("User")
 
-	
-	pagination, err := actions.Paginate(c, db, &models.File{})
+	pagination, err := actions.Paginate(c, db, models.File{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "pagination error"})
 		return
@@ -63,14 +63,14 @@ func GetAllFile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"files": gin.H{
-		"page":        pagination.Page,
-		"limit":       pagination.Limit,
-		"total":       pagination.Total,
-		"totalPages":  pagination.TotalPages,
-		"nextPage":    pagination.NextPage,
-		"prevPage":    pagination.PrevPage,
-		"data":        fileDto,
-	},
+			"page":       pagination.Page,
+			"limit":      pagination.Limit,
+			"total":      pagination.Total,
+			"totalPages": pagination.TotalPages,
+			"nextPage":   pagination.NextPage,
+			"prevPage":   pagination.PrevPage,
+			"data":       fileDto,
+		},
 	})
 }
 
@@ -136,32 +136,35 @@ func PostFile(c *gin.Context) {
 	})
 }
 
-func DownloadFile(c *gin.Context){
+func DownloadFile(c *gin.Context) {
 	ID := c.Param("id")
 
 	switch {
-	case ID == "" :
+	case ID == "":
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID required"})
-        return
+		return
 	}
-	
+
 	userID := c.GetString("user_id")
 	var file models.File
 
 	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).First(&file).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
-        return
-    }
+		c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
+		return
+	}
+	safePath := filepath.Clean(filepath.Join("uploads", file.StoredName))
+	if !strings.HasPrefix(safePath, "uploads") {
+		c.JSON(http.StatusForbidden, gin.H{"error": "invalid file path"})
+		return
+	}
 	filePath := filepath.Join("uploads", file.StoredName)
-    if _, err := os.Stat(filePath); os.IsNotExist(err) {
-        c.JSON(http.StatusNotFound, gin.H{"error": "file not found on disk"})
-        return
-    }
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "file not found on disk"})
+		return
+	}
 
-    c.FileAttachment(filePath, file.OriginalName)
+	c.FileAttachment(filePath, file.OriginalName)
 }
-
-
 
 func DeleteFile(c *gin.Context) {
 	var file models.File
