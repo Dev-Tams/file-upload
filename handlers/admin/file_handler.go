@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	dto "github.com/dev-tams/file-upload/DTO"
-	"github.com/dev-tams/file-upload/actions"
+	"github.com/dev-tams/file-upload/utils"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
 	"github.com/gin-gonic/gin"
@@ -59,7 +59,7 @@ func GetAllFiles(ctx *gin.Context) {
 		Order("uploaded_at DESC").
 		Preload("User")
 
-	pagination, err := actions.Paginate(ctx, db, models.File{})
+	pagination, err := utils.Paginate(ctx, db, models.File{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "pagination error"})
 		return

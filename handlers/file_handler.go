@@ -8,7 +8,7 @@ import (
 	"time"
 
 	dto "github.com/dev-tams/file-upload/DTO"
-	"github.com/dev-tams/file-upload/actions"
+	"github.com/dev-tams/file-upload/utils"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
 	"github.com/gin-gonic/gin"
@@ -47,7 +47,7 @@ func GetAllFile(c *gin.Context) {
 	userID := c.GetString("user_id")
 	db := config.DB.Where("user_id = ?", userID).Order("uploaded_at DESC").Preload("User")
 
-	pagination, err := actions.Paginate(c, db, models.File{})
+	pagination, err := utils.Paginate(c, db, models.File{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "pagination error"})
 		return
@@ -94,7 +94,7 @@ func PostFile(c *gin.Context) {
 		storedName := id + filepath.Ext(file.Filename)
 
 		// validate file size & ext
-		if err := actions.ValidateFile(file, 1, []string{".png", ".jpg", ".jpeg"}); err != nil {
+		if err := utils.ValidateFile(file, 1, []string{".png", ".jpg", ".jpeg"}); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
