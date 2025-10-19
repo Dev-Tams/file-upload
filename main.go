@@ -66,6 +66,15 @@ func main() {
 
 			adminRoutes.PUT("/users/:user_id", admin.PromoteToAdmin)
 
+			adminRoutes.GET("/users/deleted", admin.GetDeletedUsers)
+			adminRoutes.GET("/users/deleted/:id", admin.GetDeletedUser)
+			adminRoutes.GET("/users/deleted/files", admin.FetchDeletedFiles)
+			adminRoutes.GET("/users/deleted/files/:id", admin.FetchDeletedFile)
+
+			
+			adminRoutes.PATCH("/users/restore/:email", admin.RestoreUser)
+			adminRoutes.PATCH("/users/restore/files/:id", admin.RestoreFile)
+
 		}
 
 	}

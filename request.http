@@ -5,17 +5,17 @@ Admin Routes
 GET http://127.0.0.1:8000/api/admin/users
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzIzYTdiNGQtZWIxMS00ODYxLWE0NzAtN2E5NmZkNzRiNDY3Iiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwOTc4OTY0fQ.CjGNDLPRVYSw1EVXddPPhU88SbKVlEV-SRPibOYl5XQ
 
 {
 
 }
 
 ###
-GET  http://127.0.0.1:8000/api/admin/users/97a1c076-aa6e-4ac9-aed3-916a1fbd6b33
+GET  http://127.0.0.1:8000/api/admin/users/723a7b4d-eb11-4861-a470-7a96fd74b467
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzIzYTdiNGQtZWIxMS00ODYxLWE0NzAtN2E5NmZkNzRiNDY3Iiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwOTc4OTY0fQ.CjGNDLPRVYSw1EVXddPPhU88SbKVlEV-SRPibOYl5XQ
 
 {
 
@@ -82,20 +82,19 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmIt
 ###
 User Routes
 ###
-POST http://127.0.0.1:8000/api/register
+POST http://127.0.0.1:8000/api/login
 Accept: application/json
 Content-Type: application/json
 
 {
     "email" : "tami@test.com",
     "password" : "1234567",
-    "role" : "admin"
 }
 ###
 GET http://127.0.0.1:8000/api/files
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMtYjZmOC00MWZiLWFmMmQtNTBhOTFiMWZkYmRjIiwicm9sZSI6InVzZXIiLCJleHAiOjE3NjA4NzAwMDZ9.B89SWGyWYmC38TeSgIKG0CssjHklZ4I-PDSuFRgaJag
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZDA5YWMzMjgtY2E1Ni00YzRkLWI2NGYtZTYyNjNlNzk3Y2Y4Iiwicm9sZSI6InVzZXIiLCJleHAiOjE3NjA5Nzk4MzZ9.3Rr0B_DMhvpAnuDKXhoQNjezlOBv5YBX800v2-tdRhs
 
 {
 
@@ -121,10 +120,10 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGE0NGVjNGMt
 }
 
 ###
-DELETE  http://127.0.0.1:8000/api/files/delete/fc2f29c8-cf21-4587-88c4-5049536fc180
+DELETE  http://127.0.0.1:8000/api/files/a840ee65-0798-4acb-9130-12c2793b1c8d
 Accept: application/json
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNTVkN2VjNmItNmQyOS00ODY1LTg4OGUtNzJmY2QyYjlkYmVlIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYwODIyODczfQ.Pd4-Xqt4QlQFc9Sn8F3HyTfm8y5oN3t-_o16gRrXFJA
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZDA5YWMzMjgtY2E1Ni00YzRkLWI2NGYtZTYyNjNlNzk3Y2Y4Iiwicm9sZSI6InVzZXIiLCJleHAiOjE3NjA5Nzk4MzZ9.3Rr0B_DMhvpAnuDKXhoQNjezlOBv5YBX800v2-tdRhs
 
 {
 

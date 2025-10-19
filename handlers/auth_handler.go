@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/dev-tams/file-upload/actions"
 	"github.com/dev-tams/file-upload/auth"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
+	"github.com/dev-tams/file-upload/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -22,7 +22,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	if !actions.IsValidEmail(user.Email) {
+	if !utils.IsValidEmail(user.Email) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email format"})
 		return
 	}
