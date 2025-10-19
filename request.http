@@ -87,8 +87,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "email" : "test@maily.com",
-    "password" : "mypassword"
+    "email" : "tami@test.com",
+    "password" : "1234567",
 }
 ###
 GET http://127.0.0.1:8000/api/files
