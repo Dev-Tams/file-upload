@@ -7,10 +7,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/dev-tams/file-upload/auth"
-	"github.com/dev-tams/file-upload/config"
-	"github.com/dev-tams/file-upload/handlers"
-	"github.com/dev-tams/file-upload/handlers/admin"
+	"github.com/dev-tams/file-upload/internal/config"
+	"github.com/dev-tams/file-upload/internal/handlers"
+	admin "github.com/dev-tams/file-upload/internal/handlers/admin"
+	auth "github.com/dev-tams/file-upload/internal/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -29,7 +29,7 @@ func main() {
 	flag.Parse()
 
 	config.ConnectDatabase()
-	
+
 	if *SeedAd {
 		admin.SeedAdminFromENV()
 		log.Println("Admin user seeding complete. Exiting.")
@@ -71,7 +71,10 @@ func main() {
 			adminRoutes.GET("/users/deleted/files", admin.FetchDeletedFiles)
 			adminRoutes.GET("/users/deleted/files/:id", admin.FetchDeletedFile)
 
+<<<<<<< HEAD:cmd/server/main.go
+=======
 			
+>>>>>>> master:main.go
 			adminRoutes.PATCH("/users/restore/:email", admin.RestoreUser)
 			adminRoutes.PATCH("/users/restore/files/:id", admin.RestoreFile)
 

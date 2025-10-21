@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dev-tams/file-upload/internal/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,7 +21,7 @@ func Middleware() gin.HandlerFunc {
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		tokenString = strings.TrimSpace(tokenString)
 
-		claims, err := ValidateToken(tokenString)
+		claims, err := services.ValidateToken(tokenString)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"error": "invalid or expired token",
@@ -43,7 +44,7 @@ func AdminOnly() gin.HandlerFunc {
 			return
 		}
 
-		userClaims := claims.(*Claims)
+		userClaims := claims.(*services.Claims)
 		if userClaims.Role != "admin" {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "admin access required"})
 			return

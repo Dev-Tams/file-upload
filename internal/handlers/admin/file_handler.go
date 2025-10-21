@@ -1,4 +1,4 @@
-package admin
+package handlers
 
 import (
 	"net/http"
@@ -6,10 +6,16 @@ import (
 	"path/filepath"
 	"strings"
 
+<<<<<<< HEAD:internal/handlers/admin/file_handler.go
+	"github.com/dev-tams/file-upload/internal/utils"
+	"github.com/dev-tams/file-upload/internal/config"
+	"github.com/dev-tams/file-upload/internal/models"
+=======
 	dto "github.com/dev-tams/file-upload/DTO"
 	"github.com/dev-tams/file-upload/utils"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
+>>>>>>> master:handlers/admin/file_handler.go
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,7 +45,7 @@ func GetFile(ctx *gin.Context) {
 	}
 
 	// Serve the file
-	fileDto := dto.FromFileModel(file)
+	fileDto := utils.FromFileModel(file)
 	ctx.JSON(http.StatusOK, gin.H{"file": fileDto})
 
 }
@@ -70,7 +76,7 @@ func GetAllFiles(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "type assertion failed"})
 		return
 	}
-	fileDto := dto.FromFileModels(files)
+	fileDto := utils.FromFileModels(files)
 	pagination.Data = fileDto
 
 	ctx.JSON(http.StatusOK, gin.H{

@@ -1,10 +1,10 @@
-package admin
+package handlers
 
 import (
 	"net/http"
 
-	"github.com/dev-tams/file-upload/config"
-	"github.com/dev-tams/file-upload/models"
+	"github.com/dev-tams/file-upload/internal/config"
+	"github.com/dev-tams/file-upload/internal/models"
 	"github.com/gin-gonic/gin"
 )
 

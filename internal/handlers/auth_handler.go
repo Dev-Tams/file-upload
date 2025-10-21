@@ -2,11 +2,18 @@ package handlers
 
 import (
 	"net/http"
+<<<<<<< HEAD:internal/handlers/auth_handler.go
+	"github.com/dev-tams/file-upload/internal/config"
+	"github.com/dev-tams/file-upload/internal/models"
+	"github.com/dev-tams/file-upload/internal/utils"
+	"github.com/dev-tams/file-upload/internal/services"
+=======
 
 	"github.com/dev-tams/file-upload/auth"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
 	"github.com/dev-tams/file-upload/utils"
+>>>>>>> master:handlers/auth_handler.go
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -46,12 +53,12 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
 		return
 	}
-	 user = models.User{
-		ID: id,
-		Email: user.Email,
+	user = models.User{
+		ID:       id,
+		Email:    user.Email,
 		Password: string(hash),
-		Role: "user",
-	 }
+		Role:     "user",
+	}
 
 	if err := config.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -93,7 +100,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := auth.GenerateToken(user.ID, user.Role)
+	token, err := services.GenerateToken(user.ID, user.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"err":     "unable to generate token",

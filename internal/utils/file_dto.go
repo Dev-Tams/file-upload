@@ -1,9 +1,9 @@
-package dto
+package utils
 
 import (
 	"time"
 
-	"github.com/dev-tams/file-upload/models"
+	"github.com/dev-tams/file-upload/internal/models"
 )
 
 type FileResponseDTO struct {

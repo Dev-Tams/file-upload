@@ -1,4 +1,4 @@
-package admin
+package handlers
 
 import (
 	"errors"
@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dev-tams/file-upload/config"
-	"github.com/dev-tams/file-upload/models"
+	"github.com/dev-tams/file-upload/internal/config"
+	"github.com/dev-tams/file-upload/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"

@@ -7,10 +7,16 @@ import (
 	"strings"
 	"time"
 
+<<<<<<< HEAD:internal/handlers/file_handler.go
+	"github.com/dev-tams/file-upload/internal/utils"
+	"github.com/dev-tams/file-upload/internal/config"
+	"github.com/dev-tams/file-upload/internal/models"
+=======
 	dto "github.com/dev-tams/file-upload/DTO"
 	"github.com/dev-tams/file-upload/utils"
 	"github.com/dev-tams/file-upload/config"
 	"github.com/dev-tams/file-upload/models"
+>>>>>>> master:handlers/file_handler.go
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -37,7 +43,7 @@ func GetFile(c *gin.Context) {
 	}
 
 	// Serve the file
-	fileDto := dto.FromFileModel(file)
+	fileDto := utils.FromFileModel(file)
 	c.JSON(http.StatusOK, gin.H{"file": fileDto})
 
 }
@@ -58,7 +64,7 @@ func GetAllFile(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "type assertion failed"})
 		return
 	}
-	fileDto := dto.FromFileModels(files)
+	fileDto := utils.FromFileModels(files)
 	pagination.Data = fileDto
 
 	c.JSON(http.StatusOK, gin.H{
@@ -87,7 +93,7 @@ func PostFile(c *gin.Context) {
 		return
 	}
 
-	var uploadedFiles []dto.FileResponseDTO
+	var uploadedFiles []utils.FileResponseDTO
 
 	for _, file := range multipleFiles {
 		id := uuid.New().String()
@@ -126,7 +132,7 @@ func PostFile(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load user info"})
 			return
 		}
-		fileDto := dto.FromFileModel(uploadedFile)
+		fileDto := utils.FromFileModel(uploadedFile)
 		uploadedFiles = append(uploadedFiles, fileDto)
 	}
 

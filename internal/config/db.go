@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/dev-tams/file-upload/models"
+	"github.com/dev-tams/file-upload/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
