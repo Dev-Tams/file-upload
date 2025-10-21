@@ -2,10 +2,18 @@ package handlers
 
 import (
 	"net/http"
+<<<<<<< HEAD:internal/handlers/auth_handler.go
 	"github.com/dev-tams/file-upload/internal/config"
 	"github.com/dev-tams/file-upload/internal/models"
 	"github.com/dev-tams/file-upload/internal/utils"
 	"github.com/dev-tams/file-upload/internal/services"
+=======
+
+	"github.com/dev-tams/file-upload/auth"
+	"github.com/dev-tams/file-upload/config"
+	"github.com/dev-tams/file-upload/models"
+	"github.com/dev-tams/file-upload/utils"
+>>>>>>> master:handlers/auth_handler.go
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"

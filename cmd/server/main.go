@@ -71,6 +71,10 @@ func main() {
 			adminRoutes.GET("/users/deleted/files", admin.FetchDeletedFiles)
 			adminRoutes.GET("/users/deleted/files/:id", admin.FetchDeletedFile)
 
+<<<<<<< HEAD:cmd/server/main.go
+=======
+			
+>>>>>>> master:main.go
 			adminRoutes.PATCH("/users/restore/:email", admin.RestoreUser)
 			adminRoutes.PATCH("/users/restore/files/:id", admin.RestoreFile)
 

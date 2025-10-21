@@ -7,9 +7,16 @@ import (
 	"strings"
 	"time"
 
+<<<<<<< HEAD:internal/handlers/file_handler.go
 	"github.com/dev-tams/file-upload/internal/utils"
 	"github.com/dev-tams/file-upload/internal/config"
 	"github.com/dev-tams/file-upload/internal/models"
+=======
+	dto "github.com/dev-tams/file-upload/DTO"
+	"github.com/dev-tams/file-upload/utils"
+	"github.com/dev-tams/file-upload/config"
+	"github.com/dev-tams/file-upload/models"
+>>>>>>> master:handlers/file_handler.go
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
