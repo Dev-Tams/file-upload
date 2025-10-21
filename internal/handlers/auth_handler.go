@@ -1,0 +1,107 @@
+package handlers
+
+import (
+	"net/http"
+	"github.com/dev-tams/file-upload/internal/config"
+	"github.com/dev-tams/file-upload/internal/models"
+	"github.com/dev-tams/file-upload/internal/utils"
+	"github.com/dev-tams/file-upload/internal/services"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+)
+
+func Register(c *gin.Context) {
+	var user models.User
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid JSON format",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	if !utils.IsValidEmail(user.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email format"})
+		return
+	}
+
+	if len(user.Password) < 6 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "password must be at least 6 characters"})
+		return
+	}
+
+	id := uuid.New().String()
+	var existingUser models.User
+	if err := config.DB.Select("id").Where("email = ?", user.Email).First(&existingUser).Error; err == nil {
+		c.JSON(http.StatusConflict, gin.H{
+			"error": "email already registered",
+		})
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
+		return
+	}
+	user = models.User{
+		ID:       id,
+		Email:    user.Email,
+		Password: string(hash),
+		Role:     "user",
+	}
+
+	if err := config.DB.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "could not create user",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "user created",
+	})
+
+}
+
+func Login(c *gin.Context) {
+	var creds models.User
+	var user models.User
+	if err := c.BindJSON(&creds); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err":     "invalid json format",
+			"details": err.Error(),
+		})
+	}
+
+	if err := config.DB.Where("email = ?", creds.Email).First(&user).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   "invalid credentials",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   "invalid credentials",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	token, err := services.GenerateToken(user.ID, user.Role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"err":     "unable to generate token",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"token": token,
+	})
+}
