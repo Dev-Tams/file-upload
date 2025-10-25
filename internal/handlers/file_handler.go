@@ -5,14 +5,16 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
-	"github.com/dev-tams/file-upload/internal/utils"
 	"github.com/dev-tams/file-upload/internal/config"
 	"github.com/dev-tams/file-upload/internal/models"
+	"github.com/dev-tams/file-upload/internal/repositories"
+	"github.com/dev-tams/file-upload/internal/services"
+	"github.com/dev-tams/file-upload/internal/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
+
+
 
 func GetFile(c *gin.Context) {
 	ID := c.Param("id")
@@ -86,47 +88,16 @@ func PostFile(c *gin.Context) {
 		return
 	}
 
-	var uploadedFiles []utils.FileResponseDTO
+	userID := c.GetString("user_id")
+	
 
-	for _, file := range multipleFiles {
-		id := uuid.New().String()
-		storedName := id + filepath.Ext(file.Filename)
+	repo := repositories.NewFileRepository(config.DB)
+	service := services.NewFileService(repo)
 
-		// validate file size & ext
-		if err := utils.ValidateFile(file, 1, []string{".png", ".jpg", ".jpeg"}); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		savedPath := filepath.Join("uploads", storedName)
-		if err := c.SaveUploadedFile(file, savedPath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		userID := c.GetString("user_id")
-		uploadedFile := models.File{
-			ID:           id,
-			StoredName:   storedName,
-			OriginalName: file.Filename,
-			DisplayName:  file.Filename,
-			UploadedAt:   time.Now(),
-			Size:         file.Size,
-			Path:         savedPath,
-			UserID:       userID,
-		}
-
-		if err := config.DB.Create(&uploadedFile).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error saving file to db": err.Error()})
-			return
-		}
-
-		if err := config.DB.Preload("User").First(&uploadedFile, "id = ?", uploadedFile.ID).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load user info"})
-			return
-		}
-		fileDto := utils.FromFileModel(uploadedFile)
-		uploadedFiles = append(uploadedFiles, fileDto)
+	uploadedFiles, err := service.UploadFiles(userID, multipleFiles)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error uploading files"})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -138,8 +109,8 @@ func PostFile(c *gin.Context) {
 func DownloadFile(c *gin.Context) {
 	ID := c.Param("id")
 
-	switch {
-	case ID == "":
+	switch ID {
+	case "":
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID required"})
 		return
 	}
