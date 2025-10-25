@@ -27,7 +27,7 @@ func (f *FileService) UploadFiles(userID string, files []*multipart.FileHeader) 
 	for _, file := range files {
 		id := uuid.New().String()
 		storedName := id + filepath.Ext(file.Filename)
-		if err := utils.ValidateFile(file, 1, []string{".png", ".jpg", ".jpeg"}); err != nil {
+		if err := utils.ValidateFile(file); err != nil {
 			return nil, err
 		}
 
@@ -47,7 +47,7 @@ func (f *FileService) UploadFiles(userID string, files []*multipart.FileHeader) 
 			UserID:       userID,
 		}
 
-		if err := s.repo.Create(&fileModel); err != nil {
+		if err := f.repo.Create(&fileModel); err != nil {
 			return nil, err
 		}
 
