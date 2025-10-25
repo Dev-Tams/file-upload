@@ -21,7 +21,7 @@ func (r *FileRepository) Create(file *models.File) error{
 func (r *FileRepository) GetById(id string) (*models.File, error) {
 
 	var file models.File
-	err :=  r.db.Preload("User").First(file, "id = ?", id).Error
+	err :=  r.db.Preload("User").First(&file, "id = ?", id).Error
 	if err != nil{
 		return nil, err
 	}
