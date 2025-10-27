@@ -7,9 +7,5 @@ note
 file.db
 fileupload.exe
 tmp
-<<<<<<< HEAD
 request.http
 version
-=======
-request.http
->>>>>>> master

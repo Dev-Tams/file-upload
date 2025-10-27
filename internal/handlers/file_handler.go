@@ -26,14 +26,14 @@ func GetFile(c *gin.Context) {
 
 	userID := c.GetString("user_id")
 
-	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).Preload("User").First(&file).Error; err != nil {
+	repo := repositories.NewFileRepository(config.DB)
+	_, err := repo.GetById(userID, ID, &file); if err != nil{
 		c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
 		return
 	}
 
-	filePath := filepath.Join("uploads", file.StoredName)
-
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+	_, err = utils.FindFilePath(file.Path, file.StoredName)
+	 if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
 	}
 
