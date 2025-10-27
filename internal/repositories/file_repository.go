@@ -18,13 +18,12 @@ func (r *FileRepository) Create(file *models.File) error{
 }
 
 
-func (r *FileRepository) GetById(id string) (*models.File, error) {
+func (r *FileRepository) GetById(userID, id string, find any) (any, error) {
 
-	var file models.File
-	err :=  r.db.Preload("User").First(&file, "id = ?", id).Error
+	err :=  r.db.Where("id = ? AND user_id = ?", id, userID).Preload("User").First(&find).Error
 	if err != nil{
 		return nil, err
 	}
-	return &file, nil
+	return &find, nil
 
 }

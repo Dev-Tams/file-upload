@@ -60,3 +60,12 @@ func SaveUploadedFile(file *multipart.FileHeader, storedName string) (string, er
 	return filePath, nil
 
 }
+
+func FindFilePath(file, storedName string)(string, error ){
+	filePath := filepath.Join("uploads", storedName)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return "", err
+	}
+	return file, nil
+}
