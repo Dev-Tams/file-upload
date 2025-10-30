@@ -1,27 +1,71 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"mime/multipart"
+	"os"
 	"path/filepath"
-	"strings"
 )
 
-// Limit file size (c.Request.ContentLength).
+const (
+	maxSize = 5 * 1024 * 1024
+)
 
-// Restrict allowed types (check file.Header.Get("Content-Type") or file extension).
-func ValidateFile(file *multipart.FileHeader, maxSize int, allowedExts[] string) error{
+var allowedExts = map[string]bool{
+	"image/jpeg":      true,
+	"image/png":       true,
+	"application/pdf": true,
+}
 
-	limit := int64(maxSize) * 1024 * 1024
-	if file.Size > limit {
-		return fmt.Errorf(" file too large, max :%d MB",  maxSize)
+func ValidateFile(file *multipart.FileHeader) error {
+
+	if file.Size > maxSize {
+		return errors.New(" file too larage")
 	}
 
-	ext := strings.ToLower(filepath.Ext(file.Filename))
-	for _, e := range allowedExts {
-        if ext == e {
-            return nil // valid
-        }
-    }
-	return fmt.Errorf("file type not allowed: %s", ext)
+	fileType := file.Header.Get("Content-Type")
+	if !allowedExts[fileType] {
+		return errors.New("unsupported file type")
+	}
+	return nil
+}
+
+func SaveUploadedFile(file *multipart.FileHeader, storedName string) (string, error) {
+
+	err := os.MkdirAll("uploads", os.ModePerm)
+	if err != nil{
+		return "", fmt.Errorf(" error creating dir")
+	}
+
+	filePath := filepath.Join("uploads", storedName)
+
+	src, err := file.Open()
+	if err != nil {
+		return "", fmt.Errorf(" error opening file %w", err)
+	}
+	defer src.Close()
+
+	dst, err := os.Create(filePath)
+	if err != nil {
+		return "", fmt.Errorf(" error creating  file %w", err)
+	}
+	defer dst.Close()
+
+	_, err = dst.ReadFrom(src)
+	if err != nil {
+		return "", fmt.Errorf("failed to save file: %w", err)
+	}
+
+	return filePath, nil
+
+}
+
+func FindFilePath(file, storedName string)(string, error ){
+	filePath := filepath.Join("uploads", storedName)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return "", err
+	}
+	return file, nil
 }
