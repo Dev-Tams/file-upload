@@ -38,10 +38,11 @@ func main() {
 		return
 	}
 
-	fileRepo := repositories.NewFileRepository(config.DB)
-	fileService := services.NewFileService(fileRepo)
-	fileHandler := handlers.NewFileHandler(fileService)
-	adminFHandler := admin.NewAdminFileHandler(fileService)
+	repo := repositories.NewDbRepository(config.DB)
+	service := services.NewService(repo)
+	fileHandler := handlers.NewFileHandler(service)
+	adminFHandler := admin.NewAdminFileHandler(service)
+	adminUHandler := admin.NewUserHandler(service)
 	router := gin.Default()
 	router.Use(cors.Default())
 
@@ -61,9 +62,9 @@ func main() {
 		adminRoutes := api.Group("/admin")
 		adminRoutes.Use(auth.Middleware(), auth.AdminOnly())
 		{
-			adminRoutes.GET("/users", admin.FetchUsers)
-			adminRoutes.GET("/users/:user_id", admin.FetchUser)
-			adminRoutes.DELETE("/users/:user_id", admin.DeleteUser)
+			adminRoutes.GET("/users", adminUHandler.FetchUsers)
+			adminRoutes.GET("/users/:user_id", adminUHandler.FetchUser)
+			adminRoutes.DELETE("/users/:user_id", adminUHandler.DeleteUser)
 
 			adminRoutes.GET("/users/:user_id/files", adminFHandler.GetAllFiles)
 			adminRoutes.GET("/users/:user_id/files/:id", adminFHandler.GetFile)

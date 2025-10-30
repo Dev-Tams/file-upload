@@ -12,15 +12,15 @@ import (
 	"github.com/google/uuid"
 )
 
-type FileService struct {
-	repo *repositories.FileRepository
+type Service struct {
+	repo *repositories.DbRepository
 }
 
-func NewFileService(repo *repositories.FileRepository) *FileService {
-	return &FileService{repo: repo}
+func NewService(repo *repositories.DbRepository) *Service {
+	return &Service{repo: repo}
 }
 
-func (f *FileService) UploadFiles(userID string, files []*multipart.FileHeader) ([]utils.FileResponseDTO, error) {
+func (f *Service) UploadFiles(userID string, files []*multipart.FileHeader) ([]utils.FileResponseDTO, error) {
 
 	var uploadedFiles []utils.FileResponseDTO
 
@@ -57,15 +57,16 @@ func (f *FileService) UploadFiles(userID string, files []*multipart.FileHeader) 
 	return uploadedFiles, nil
 }
 
-func (f *FileService) GetAllFiles(id, userID string) error {
-     err := f.repo.GET(userID)
+func (f *Service) GetAllFiles(id, userID string) ([]utils.FileResponseDTO, error) {
+    files, err := f.repo.GetAllFiles(userID)
     if err != nil {
-       return err
+       return nil, err
     }
-	return nil
+	dto := utils.FromFileModels(files)
+	return dto, nil
 
 }
-func (f *FileService) GetFile(id, userID string) (*utils.FileResponseDTO, error) {
+func (f *Service) GetFile(id, userID string) (*utils.FileResponseDTO, error) {
     file, err := f.repo.GetById(id, userID)
     if err != nil {
         return nil, err
@@ -78,7 +79,7 @@ func (f *FileService) GetFile(id, userID string) (*utils.FileResponseDTO, error)
     dto := utils.FromFileModel(*file)
     return &dto, nil
 }
-func (f *FileService) DeleteFile(id, userID string) error {
+func (f *Service) DeleteFile(id, userID string) error {
     file, err := f.repo.GetById(id, userID)
     if err != nil {
         return  err
@@ -90,7 +91,7 @@ func (f *FileService) DeleteFile(id, userID string) error {
 	return nil
 }
 
-func (f *FileService) DownloadFile(id, userID string) (*models.File, error) {
+func (f *Service) DownloadFile(id, userID string) (*models.File, error) {
 	file, err := f.repo.GetById(id, userID)
 	if err != nil {
 		return nil, err

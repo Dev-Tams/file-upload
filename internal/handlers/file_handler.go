@@ -11,10 +11,10 @@ import (
 )
 
 type FileHandler struct {
-    service *services.FileService
+    service *services.Service
 }
 
-func NewFileHandler(service *services.FileService) *FileHandler {
+func NewFileHandler(service *services.Service) *FileHandler {
     return &FileHandler{service: service}
 }
 
