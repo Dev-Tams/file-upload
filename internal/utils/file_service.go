@@ -6,6 +6,9 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/dev-tams/file-upload/internal/models"
 )
 
 const (
@@ -34,7 +37,7 @@ func ValidateFile(file *multipart.FileHeader) error {
 func SaveUploadedFile(file *multipart.FileHeader, storedName string) (string, error) {
 
 	err := os.MkdirAll("uploads", os.ModePerm)
-	if err != nil{
+	if err != nil {
 		return "", fmt.Errorf(" error creating dir")
 	}
 
@@ -61,11 +64,18 @@ func SaveUploadedFile(file *multipart.FileHeader, storedName string) (string, er
 
 }
 
-func FindFilePath(file, storedName string)(string, error ){
-	filePath := filepath.Join("uploads", storedName)
+func FindFilePath(file *models.File) (*models.File, error) {
+    baseDir := "uploads"
+    safePath := filepath.Join(baseDir, filepath.Clean(file.StoredName))
 
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return "", err
-	}
-	return file, nil
+    rel, err := filepath.Rel(baseDir, safePath)
+    if err != nil || strings.HasPrefix(rel, "..") {
+        return nil, fmt.Errorf("invalid file path")
+    }
+
+    if _, err := os.Stat(safePath); os.IsNotExist(err) {
+        return nil, fmt.Errorf("file not found")
+    }
+
+    return file, nil
 }

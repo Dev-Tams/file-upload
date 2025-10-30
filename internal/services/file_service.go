@@ -57,12 +57,48 @@ func (f *FileService) UploadFiles(userID string, files []*multipart.FileHeader) 
 	return uploadedFiles, nil
 }
 
+func (f *FileService) GetAllFiles(id, userID string) error {
+     err := f.repo.GET(userID)
+    if err != nil {
+       return err
+    }
+	return nil
+
+}
 func (f *FileService) GetFile(id, userID string) (*utils.FileResponseDTO, error) {
     file, err := f.repo.GetById(id, userID)
     if err != nil {
         return nil, err
     }
 
+	if _, err := utils.FindFilePath(file); err != nil {
+		return nil, err
+	}
+	
     dto := utils.FromFileModel(*file)
     return &dto, nil
+}
+func (f *FileService) DeleteFile(id, userID string) error {
+    file, err := f.repo.GetById(id, userID)
+    if err != nil {
+        return  err
+    }
+    err = f.repo.Delete(file)
+	if err != nil {
+        return err
+    }
+	return nil
+}
+
+func (f *FileService) DownloadFile(id, userID string) (*models.File, error) {
+	file, err := f.repo.GetById(id, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := utils.FindFilePath(file); err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }
