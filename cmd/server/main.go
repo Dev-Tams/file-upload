@@ -11,6 +11,8 @@ import (
 	"github.com/dev-tams/file-upload/internal/handlers"
 	admin "github.com/dev-tams/file-upload/internal/handlers/admin"
 	auth "github.com/dev-tams/file-upload/internal/middleware"
+	"github.com/dev-tams/file-upload/internal/repositories"
+	"github.com/dev-tams/file-upload/internal/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -36,6 +38,10 @@ func main() {
 		return
 	}
 
+	fileRepo := repositories.NewFileRepository(config.DB)
+	fileService := services.NewFileService(fileRepo)
+	fileHandler := handlers.NewFileHandler(fileService)
+	adminFHandler := admin.NewAdminFileHandler(fileService)
 	router := gin.Default()
 	router.Use(cors.Default())
 
@@ -46,11 +52,11 @@ func main() {
 
 		files := api.Group("/files")
 		files.Use(auth.Middleware())
-		files.POST("/upload", handlers.PostFile)
-		files.GET("/", handlers.GetAllFile)
-		files.GET("/:id", handlers.GetFile)
-		files.GET("/:id/download", handlers.DownloadFile)
-		files.DELETE("/:id", handlers.DeleteFile)
+		files.POST("/upload", fileHandler.PostFile)
+		files.GET("/", fileHandler.GetAllFile)
+		files.GET("/:id", fileHandler.GetFile)
+		files.GET("/:id/download", fileHandler.DownloadFile)
+		files.DELETE("/:id", fileHandler.DeleteFile)
 
 		adminRoutes := api.Group("/admin")
 		adminRoutes.Use(auth.Middleware(), auth.AdminOnly())
@@ -59,10 +65,10 @@ func main() {
 			adminRoutes.GET("/users/:user_id", admin.FetchUser)
 			adminRoutes.DELETE("/users/:user_id", admin.DeleteUser)
 
-			adminRoutes.GET("/users/:user_id/files", admin.GetAllFiles)
-			adminRoutes.GET("/users/:user_id/files/:id", admin.GetFile)
-			adminRoutes.GET("/users/:user_id/files/:id/download", admin.DownloadFile)
-			adminRoutes.DELETE("/users/:user_id/files/:id", admin.DeleteFile)
+			adminRoutes.GET("/users/:user_id/files", adminFHandler.GetAllFiles)
+			adminRoutes.GET("/users/:user_id/files/:id", adminFHandler.GetFile)
+			adminRoutes.GET("/users/:user_id/files/:id/download", adminFHandler.DownloadFile)
+			adminRoutes.DELETE("/users/:user_id/files/:id", adminFHandler.DeleteFile)
 
 			adminRoutes.PUT("/users/:user_id", admin.PromoteToAdmin)
 
@@ -74,6 +80,8 @@ func main() {
 			adminRoutes.PATCH("/users/restore/:email", admin.RestoreUser)
 			adminRoutes.PATCH("/users/restore/files/:id", admin.RestoreFile)
 
+			adminRoutes.PUT("reset-pasword", admin.ResetPassword)
+
 		}
 
 	}
@@ -83,7 +91,7 @@ func main() {
 		port = "8080"
 	}
 
-	fmt.Printf(" server running on port %s", os.Getenv(port))
+	fmt.Printf(" server running on port %s", port)
 	router.Run(":" + port)
 
 }

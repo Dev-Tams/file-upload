@@ -2,17 +2,23 @@ package handlers
 
 import (
 	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
 
-	"github.com/dev-tams/file-upload/internal/utils"
 	"github.com/dev-tams/file-upload/internal/config"
 	"github.com/dev-tams/file-upload/internal/models"
+	"github.com/dev-tams/file-upload/internal/services"
+	"github.com/dev-tams/file-upload/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func GetFile(ctx *gin.Context) {
+type FileHandler struct {
+	service *services.FileService
+}
+
+func NewAdminFileHandler(service *services.FileService) *FileHandler {
+	return &FileHandler{service: service}
+}
+
+func(f *FileHandler) GetFile(ctx *gin.Context) {
 	ID := ctx.Param("id")
 	userID := ctx.Param("user_id")
 
@@ -24,26 +30,18 @@ func GetFile(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
 		return
 	}
-	var file models.File
 
-	if err := config.DB.Where("user_id = ? AND id = ?", userID, ID).Preload("User").First(&file).Error; err != nil {
+	file, err := f.service.GetFile(ID, userID)
+	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
 		return
 	}
 
-	filePath := filepath.Join("uploads", file.StoredName)
-
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": " file not found on disk"})
-	}
-
-	// Serve the file
-	fileDto := utils.FromFileModel(file)
-	ctx.JSON(http.StatusOK, gin.H{"file": fileDto})
+	ctx.JSON(http.StatusOK, gin.H{"file": file})
 
 }
 
-func GetAllFiles(ctx *gin.Context) {
+func(f *FileHandler) GetAllFiles(ctx *gin.Context) {
 
 	userID := ctx.Param("user_id")
 	if userID == "" {
@@ -85,7 +83,7 @@ func GetAllFiles(ctx *gin.Context) {
 	})
 }
 
-func DownloadFile(ctx *gin.Context) {
+func(f *FileHandler) DownloadFile(ctx *gin.Context) {
 	id := ctx.Param("id")
 	userID := ctx.Param("user_id")
 
@@ -97,28 +95,18 @@ func DownloadFile(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user_id required"})
 		return
 	}
-	var file models.File
 
-	if err := config.DB.Where("user_id = ? AND id = ?", userID, id).First(&file).Error; err != nil {
+	
+	file, err := f.service.DownloadFile(id, userID); if err != nil{
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
 		return
 	}
-	safePath := filepath.Clean(filepath.Join("uploads", file.StoredName))
-	if !strings.HasPrefix(safePath, "uploads") {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "invalid file path"})
-		return
-	}
-	filePath := filepath.Join("uploads", file.StoredName)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "file not found on disk"})
-		return
-	}
 
-	ctx.FileAttachment(filePath, file.OriginalName)
+	ctx.FileAttachment(file.Path, file.OriginalName)
+	ctx.Status(http.StatusOK)
 }
 
-func DeleteFile(ctx *gin.Context) {
-	var file models.File
+func(f *FileHandler) DeleteFile(ctx *gin.Context) {
 
 	ID := ctx.Param("id")
 	userID := ctx.Param("user_id")
@@ -132,15 +120,9 @@ func DeleteFile(ctx *gin.Context) {
 		return
 	}
 
-	if err := config.DB.Where("id = ? AND user_id = ?", ID, userID).First(&file).Error; err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"details": err.Error(),
-		})
-		return
-	}
-
-	if err := config.DB.Delete(&file).Error; err != nil {
-		ctx.JSONP(http.StatusNotAcceptable, gin.H{
+	err := f.service.DeleteFile(ID, userID)
+	if err != nil{
+		ctx.JSON(http.StatusNotAcceptable, gin.H{
 			"error":   "failed to delete file",
 			"details": err.Error(),
 		})
