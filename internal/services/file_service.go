@@ -56,3 +56,13 @@ func (f *FileService) UploadFiles(userID string, files []*multipart.FileHeader) 
 	}
 	return uploadedFiles, nil
 }
+
+func (f *FileService) GetFile(id, userID string) (*utils.FileResponseDTO, error) {
+    file, err := f.repo.GetById(id, userID)
+    if err != nil {
+        return nil, err
+    }
+
+    dto := utils.FromFileModel(*file)
+    return &dto, nil
+}
