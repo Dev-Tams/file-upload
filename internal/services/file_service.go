@@ -71,6 +71,10 @@ func (f *FileService) GetFile(id, userID string) (*utils.FileResponseDTO, error)
         return nil, err
     }
 
+	if _, err := utils.FindFilePath(file); err != nil {
+		return nil, err
+	}
+	
     dto := utils.FromFileModel(*file)
     return &dto, nil
 }
