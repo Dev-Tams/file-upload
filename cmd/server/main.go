@@ -14,14 +14,14 @@ import (
 	"github.com/dev-tams/file-upload/internal/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func init() {
-	godotenv.Load()
+	config.LoadEnv()
 }
 func main() {
 
+	config.InitRedis()
 	gin.DisableConsoleColor()
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f)
@@ -36,7 +36,7 @@ func main() {
 		log.Println("Admin user seeding complete. Exiting.")
 		return
 	}
-
+	config.InitRedis()
 	repo := repositories.NewDbRepository(config.DB)
 	service := services.NewService(repo)
 
@@ -44,10 +44,7 @@ func main() {
 	r.Use(cors.Default())
 	router.RegisterRoutes(r, service)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	port := config.Config.Port
 
 	fmt.Printf(" server running on port %s", port)
 	r.Run(":" + port)

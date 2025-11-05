@@ -18,7 +18,7 @@ func ConnectDatabase() {
 			fmt.Println("error creating folder", err.Error())
 	}
 	
-	database, err := gorm.Open(sqlite.Open("data/file.db"), &gorm.Config{})
+	database, err := gorm.Open(sqlite.Open(Config.DatabaseURL), &gorm.Config{})
 	if err != nil {
 		log.Fatal("error connecting to db", err)
 	}
