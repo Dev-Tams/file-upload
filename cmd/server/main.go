@@ -36,7 +36,7 @@ func main() {
 		log.Println("Admin user seeding complete. Exiting.")
 		return
 	}
-
+	config.InitRedis()
 	repo := repositories.NewDbRepository(config.DB)
 	service := services.NewService(repo)
 
