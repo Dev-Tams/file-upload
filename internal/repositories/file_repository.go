@@ -32,6 +32,16 @@ func (r *DbRepository) GetById(id, userID string) (*models.File, error) {
 	return &file, nil
 }
 
+func (r *DbRepository) GetUserStorageUsage(userID string) (int64, error) {
+	var total int64
+	err := r.db.Model(&models.File{}).
+		Where("user_id = ?", userID).
+		Select("COALESCE(SUM(Size), 0)").
+		Scan(&total).Error
+	return total, err
+}
+
+
 func (r *DbRepository) Delete(delete *models.File) error {
 	if err := r.db.Delete(delete).Error; err != nil {
 		return err
