@@ -5,16 +5,16 @@ import (
 
 	"github.com/dev-tams/file-upload/internal/config"
 	"github.com/dev-tams/file-upload/internal/models"
-	"github.com/dev-tams/file-upload/internal/services"
+	"github.com/dev-tams/file-upload/internal/services/file_service"
 	"github.com/dev-tams/file-upload/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
 type FileHandler struct {
-	service *services.Service
+	service *file_service.Service
 }
 
-func NewAdminFileHandler(service *services.Service) *FileHandler {
+func NewAdminFileHandler(service *file_service.Service) *FileHandler {
 	return &FileHandler{service: service}
 }
 
