@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	maxSize = 5 * 1024 * 1024
+	maxSize = 20 * 1024 * 1024
 )
 
 var allowedExts = map[string]bool{
@@ -78,4 +78,14 @@ func FindFilePath(file *models.File) (*models.File, error) {
     }
 
     return file, nil
+}
+
+func EnsureWithinQuota(userID string, currentUsage, newUploadSize int64) error {
+	var user models.User
+	limitBytes := int64(user.StorageLimit) * 1024 * 1024
+	if currentUsage+newUploadSize > limitBytes {
+		return fmt.Errorf("storage limit exceeded: used %dMB of %dMB",
+			currentUsage/1024/1024, user.StorageLimit)
+	}
+	return nil
 }

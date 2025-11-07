@@ -4,7 +4,6 @@ import (
 	"github.com/dev-tams/file-upload/internal/models"
 )
 
-
 var user models.User
 
 func (r *DbRepository) CreateUser(user *models.User) error {
@@ -12,8 +11,8 @@ func (r *DbRepository) CreateUser(user *models.User) error {
 }
 
 func (r *DbRepository) GetUserById(userID string) (*models.User, error) {
-		err := r.db.
-		Where("user_id = ?", userID).
+	err := r.db.
+		Where("id = ?", userID).
 		First(&user).Error
 
 	if err != nil {
@@ -28,6 +27,18 @@ func (r *DbRepository) DeleteUser(delete *models.User) error {
 		return err
 	}
 	return nil
+}
+func (r *DbRepository) UpdateUserStorage(userID string, newLimit int) error {
+	return r.db.Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("storage_limit", newLimit).Error
+
+}
+
+func (r *DbRepository) AssignPlan(userID, newPlan string) error {
+	return r.db.Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("plan", newPlan).Error
 }
 
 func (r *DbRepository) GetAllUsers() ([]models.User, error) {

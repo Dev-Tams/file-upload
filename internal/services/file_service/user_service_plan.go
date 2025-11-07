@@ -1,0 +1,34 @@
+package file_service
+
+import (
+	"fmt"
+
+	"github.com/dev-tams/file-upload/internal/models"
+)
+
+var planStorage = map[string]int{
+	"free":       100,   // MB
+	"pro":        1000,  // MB
+	"enterprise": 10240, // MB
+}
+
+func (u *Service) AssignPlan(userID, plan string) (*models.User, error) {
+
+	limit, ok := planStorage[plan]
+	if !ok {
+		return nil, fmt.Errorf("invalid plan: %s", plan)
+	}
+	if err:= u.repo.AssignPlan(userID, plan); err != nil {
+		return nil, err
+	}
+	if err := u.repo.UpdateUserStorage(userID, limit); err != nil {
+		return nil, err
+	}
+
+	user, err := u.repo.GetUserById(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	 return user, nil
+}

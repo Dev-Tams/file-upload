@@ -4,11 +4,11 @@ import (
 	"github.com/dev-tams/file-upload/internal/handlers"
 	admin "github.com/dev-tams/file-upload/internal/handlers/admin"
 	auth "github.com/dev-tams/file-upload/internal/middleware"
-	"github.com/dev-tams/file-upload/internal/services"
+	"github.com/dev-tams/file-upload/internal/services/file_service"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, service *services.Service) {
+func RegisterRoutes(r *gin.Engine, service *file_service.Service) {
 	fileHandler := handlers.NewFileHandler(service)
 	adminFHandler := admin.NewAdminFileHandler(service)
 	adminUHandler := admin.NewUserHandler(service)
@@ -37,6 +37,10 @@ func RegisterRoutes(r *gin.Engine, service *services.Service) {
 			adminRoutes.GET("/users/:user_id", adminUHandler.FetchUser)
 			adminRoutes.DELETE("/users/:user_id", adminUHandler.DeleteUser)
 
+			
+			adminRoutes.PUT("/users/storage/:user_id", adminUHandler.UpdateUserStorage)
+			adminRoutes.PUT("/users/assign_plan/:user_id", adminUHandler.AssignPlan)
+
 			adminRoutes.GET("/users/:user_id/files", adminFHandler.GetAllFiles)
 			adminRoutes.GET("/users/:user_id/files/:id", adminFHandler.GetFile)
 			adminRoutes.GET("/users/:user_id/files/:id/download", adminFHandler.DownloadFile)
@@ -51,7 +55,6 @@ func RegisterRoutes(r *gin.Engine, service *services.Service) {
 
 			adminRoutes.PATCH("/users/restore/:email", admin.RestoreUser)
 			adminRoutes.PATCH("/users/restore/files/:id", admin.RestoreFile)
-
 			adminRoutes.PUT("reset-pasword", admin.ResetPassword)
 
 		}
