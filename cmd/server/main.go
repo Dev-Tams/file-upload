@@ -11,7 +11,7 @@ import (
 	"github.com/dev-tams/file-upload/internal/config"
 	admin "github.com/dev-tams/file-upload/internal/handlers/admin"
 	"github.com/dev-tams/file-upload/internal/repositories"
-	"github.com/dev-tams/file-upload/internal/services"
+	"github.com/dev-tams/file-upload/internal/services/file_service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -38,7 +38,7 @@ func main() {
 	}
 	config.InitRedis()
 	repo := repositories.NewDbRepository(config.DB)
-	service := services.NewService(repo)
+	service := file_service.NewService(repo)
 
 	r := gin.Default()
 	r.Use(cors.Default())
