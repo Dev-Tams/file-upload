@@ -27,7 +27,7 @@ func (f *Service) UploadFiles(userID string, files []*multipart.FileHeader) ([]u
 		}
 
 		//check storage + current file upload
-		if err := utils.EnsureWithinQuota(userID, currentUsage, totalNewSize); err != nil {
+		if err := utils.EnsureWithinQuota(currentUsage, totalNewSize, user.StorageLimit); err != nil {
 			return err
 		}
 
@@ -62,7 +62,7 @@ func (f *Service) UploadFiles(userID string, files []*multipart.FileHeader) ([]u
 			}
 
 			//create file in db
-			if err := f.repo.Create(&fileModel); err != nil {
+			if err := f.repo.Create(tx, &fileModel); err != nil {
 				return err
 			}
 

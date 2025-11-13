@@ -116,7 +116,10 @@ func (f *FileHandler) PostFile(c *gin.Context) {
 	//uploads file
 	uploadedFiles, err := f.service.UploadFiles(userID, multipleFiles)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error uploading files"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "error uploading files",
+			"err" : err.Error(),
+		})
 		return
 	}
 
