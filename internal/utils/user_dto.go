@@ -9,8 +9,8 @@ type UserResponseDTO struct {
 	ID        string `json:"id"`
 	UserEmail string `json:"user_email"`
 	Plan	  string `json:"plan"`
-	StorageLimit int `json:"storage_limit"` 
-	UsedStorage	int  `json:"used_storage"`
+	StorageLimit int64 `json:"storage_limit"` 
+	UsedStorage	int64  `json:"used_storage"`
 	Role      string `json:"role"`
 }
 
