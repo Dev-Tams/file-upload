@@ -7,9 +7,9 @@ import (
 )
 
 var planStorage = map[string]int{
-	"free":       100,   // MB
-	"pro":        1000,  // MB
-	"enterprise": 10240, // MB
+	"free":       100 * 1024 * 1024,   // 100 MB
+	"pro":        1000 * 1024 * 1024,  // 1 GB
+	"enterprise": 10 * 1024 * 1024 * 1024, // 10 GB
 }
 
 func (u *Service) AssignPlan(userID, plan string) (*models.User, error) {
@@ -21,7 +21,7 @@ func (u *Service) AssignPlan(userID, plan string) (*models.User, error) {
 	if err:= u.repo.AssignPlan(userID, plan); err != nil {
 		return nil, err
 	}
-	if err := u.repo.UpdateUserStorage(userID, limit); err != nil {
+	if err := u.repo.UpdateUserStorage(userID, int64(limit)); err != nil {
 		return nil, err
 	}
 

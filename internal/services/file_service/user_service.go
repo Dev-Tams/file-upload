@@ -35,8 +35,33 @@ func (u *Service) DeleteUser(userID string) error {
 	return nil
 }
 
-func (u *Service) UpdateUserStorage(userID string, newLimit int) (*models.User, error) {
-	if err := u.repo.UpdateUserStorage(userID, newLimit); err != nil {
+func (u *Service) GetUserStorage(userID string) (*utils.UserStorageDTO, error) {
+	if err := u.repo.GetUserStorage(userID); err != nil {
+		return nil, err
+	}
+	user, err := u.repo.GetUserById(userID)
+	if err != nil {
+		return nil, err
+	}
+	dto := utils.FromUserStorageModel(*user)
+	return &dto, nil
+}
+
+func (u *Service) GetAllUserStorage() ([]utils.UserStorageDTO, error) {
+	users, err := u.repo.GetAllUserStorage()
+	if err != nil {
+		return nil, err
+	}
+
+	dto := utils.FromUserStorageModels(users)
+	return dto, nil
+
+}
+
+func (u *Service) UpdateUserStorage(userID string, newLimit int64) (*models.User, error) {
+	// newLimitMB from input
+	limitBytes := newLimit * 1024 * 1024
+	if err := u.repo.UpdateUserStorage(userID, limitBytes); err != nil {
 		return nil, err
 	}
 	user, err := u.repo.GetUserById(userID)

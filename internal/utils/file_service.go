@@ -80,12 +80,14 @@ func FindFilePath(file *models.File) (*models.File, error) {
     return file, nil
 }
 
-func EnsureWithinQuota(userID string, currentUsage, newUploadSize int64) error {
-	var user models.User
-	limitBytes := int64(user.StorageLimit) * 1024 * 1024
-	if currentUsage+newUploadSize > limitBytes {
-		return fmt.Errorf("storage limit exceeded: used %dMB of %dMB",
-			currentUsage/1024/1024, user.StorageLimit)
+func EnsureWithinQuota(currentUsage, newUploadSize, storageLimitBytes int64) error {
+	if currentUsage+newUploadSize > storageLimitBytes {
+		return fmt.Errorf(
+			"storage limit exceeded: used %.2fMB of %.2fMB",
+			float64(currentUsage)/1024/1024,
+			float64(storageLimitBytes)/1024/1024,
+		)
 	}
 	return nil
 }
+

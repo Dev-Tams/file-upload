@@ -25,5 +25,5 @@ func InitRedis() {
 		log.Printf(" Redis not available: %v", err)
 		Cache = nil // fallback to no-cache mode
 	}
-	log.Printf("✅ Connected to Redis at %s [DB=%d]", Config.RedisAddr, Config.RedisDB)
+	log.Printf(" Connected to Redis at %s [DB=%d]", Config.RedisAddr, Config.RedisDB)
 }

@@ -16,7 +16,19 @@ type FileResponseDTO struct {
 	UserEmail   string    `json:"user_email"`
 }
 
+
+type UserStorageDTO struct {
+	ID           string `json:"id"`
+	Email        string `json:"email"`
+	UsedStorage  int64  `json:"used_storage"`
+	StorageLimit int64    `json:"storage_limit"`
+	Plan         string `json:"plan"`
+	Role         string `json:"role"`
+	PercentUsed  float64 `json:"percent_used"`
+}
+
 func FromFileModel(file models.File) FileResponseDTO {
+	var user models.User
 	return FileResponseDTO{
 		ID:          file.ID,
 		DisplayName: file.DisplayName,
@@ -24,7 +36,7 @@ func FromFileModel(file models.File) FileResponseDTO {
 		UploadedAt:  file.UploadedAt,
 		Size:        file.Size,
 		UserID:      file.UserID,
-		UserEmail:   file.User.Email,
+		UserEmail:   user.Email,
 	}
 }
 
@@ -33,6 +45,27 @@ func FromFileModels(files []models.File) []FileResponseDTO {
 	var dtos []FileResponseDTO
 	for _, f := range files {
 		dtos = append(dtos, FromFileModel(f))
+	}
+	return dtos
+}
+
+
+func FromUserStorageModel(user models.User) UserStorageDTO {
+	return UserStorageDTO{
+		ID:           user.ID,
+		Email:        user.Email,
+		UsedStorage:  user.UsedStorage,
+		StorageLimit: user.StorageLimit,
+		PercentUsed:  (float64(user.UsedStorage) / float64(user.StorageLimit)) * 100,
+		Plan:         user.Plan,
+		Role:         user.Role,
+	}
+}
+
+func FromUserStorageModels(users []models.User) []UserStorageDTO {
+	var dtos []UserStorageDTO
+	for _, u := range users {
+		dtos = append(dtos, FromUserStorageModel(u))
 	}
 	return dtos
 }

@@ -15,8 +15,8 @@ func NewDbRepository(db *gorm.DB) *DbRepository {
 	return &DbRepository{db: db}
 }
 
-func (r *DbRepository) Create(file *models.File) error {
-	return r.db.Create(file).Error
+func (r *DbRepository) Create(tx *gorm.DB, file *models.File) error {
+	return tx.Create(file).Error
 }
 
 func (r *DbRepository) GetById(id, userID string) (*models.File, error) {

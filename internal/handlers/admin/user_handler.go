@@ -64,9 +64,43 @@ func (u *UserHandler) DeleteUser(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func (u *UserHandler) GetUserStorage(c *gin.Context) {
+
+	userID := c.Param("user_id")
+	user, err := u.service.GetUserStorage(userID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data" : "user storage",
+		"storage": user,
+
+	})
+}
+
+func (u *UserHandler) GetAllUserStorage(c *gin.Context) {
+
+	users, err := u.service.GetAllUserStorage()
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "all users storage",
+		"data":     users,
+	})
+}
+
 func (u *UserHandler) UpdateUserStorage(c *gin.Context) {
 	var req struct {
-		NewLimit int
+		NewLimit int64
 	}
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
