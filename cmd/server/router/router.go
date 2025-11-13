@@ -38,6 +38,8 @@ func RegisterRoutes(r *gin.Engine, service *file_service.Service) {
 			adminRoutes.DELETE("/users/:user_id", adminUHandler.DeleteUser)
 
 			
+			adminRoutes.GET("/users/storage", adminUHandler.GetAllUserStorage)
+			adminRoutes.GET("/users/storage/:user_id", adminUHandler.GetUserStorage)
 			adminRoutes.PUT("/users/storage/:user_id", adminUHandler.UpdateUserStorage)
 			adminRoutes.PUT("/users/assign_plan/:user_id", adminUHandler.AssignPlan)
 
