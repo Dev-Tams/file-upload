@@ -12,6 +12,7 @@ import (
 	admin "github.com/dev-tams/file-upload/internal/handlers/admin"
 	"github.com/dev-tams/file-upload/internal/repositories"
 	"github.com/dev-tams/file-upload/internal/services/file_service"
+	"github.com/dev-tams/file-upload/internal/storage"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +22,6 @@ func init() {
 }
 func main() {
 
-	config.InitRedis()
 	gin.DisableConsoleColor()
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f)
@@ -37,8 +37,13 @@ func main() {
 		return
 	}
 	config.InitRedis()
+	cfg := config.Config 
+	storageProvider, err := storage.NewStorageProvider(cfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize storage provider: %v", err)
+	}
 	repo := repositories.NewDbRepository(config.DB)
-	service := file_service.NewService(repo)
+	service := file_service.NewService(repo, storageProvider)
 
 	r := gin.Default()
 	r.Use(cors.Default())
