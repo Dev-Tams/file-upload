@@ -1,0 +1,7 @@
+// STORAGE PROVIDER:
+// By default this app uses LocalStorage.
+// To use S3, set STORAGE_PROVIDER=s3 in your .env.
+//
+// If you want to add GCS/Azure, simply extend the init logic:
+// if cfg.StorageProvider == "gcs" { ... }
+// This app intentionally avoids full factory patterns for simplicity.

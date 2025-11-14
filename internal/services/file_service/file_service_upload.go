@@ -44,7 +44,7 @@ func (f *Service) UploadFiles(userID string, files []*multipart.FileHeader) ([]u
 			storedName := id + filepath.Ext(file.Filename)
 
 			//save file in folder
-			savedPath, err := utils.SaveUploadedFile(file, storedName)
+			savedPath, err := f.storage.Save(file, storedName)
 			if err != nil {
 				return err
 			}
