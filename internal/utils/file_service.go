@@ -65,22 +65,27 @@ func SaveUploadedFile(file *multipart.FileHeader, storedName string) (string, er
 }
 
 func FindFilePath(file *models.File) (*models.File, error) {
-    baseDir := "uploads"
-    safePath := filepath.Join(baseDir, filepath.Clean(file.StoredName))
+	baseDir := "uploads"
+	safePath := filepath.Join(baseDir, filepath.Clean(file.StoredName))
 
-    rel, err := filepath.Rel(baseDir, safePath)
-    if err != nil || strings.HasPrefix(rel, "..") {
-        return nil, fmt.Errorf("invalid file path")
-    }
+	rel, err := filepath.Rel(baseDir, safePath)
+	if err != nil || strings.HasPrefix(rel, "..") {
+		return nil, fmt.Errorf("invalid file path")
+	}
 
-    if _, err := os.Stat(safePath); os.IsNotExist(err) {
-        return nil, fmt.Errorf("file not found")
-    }
+	if _, err := os.Stat(safePath); os.IsNotExist(err) {
+		return nil, fmt.Errorf("file not found")
+	}
 
-    return file, nil
+	return file, nil
 }
 
 func EnsureWithinQuota(currentUsage, newUploadSize, storageLimitBytes int64) error {
+	
+	if storageLimitBytes <= 0 {
+		return fmt.Errorf("invalid storage limit: %d bytes", storageLimitBytes)
+	}
+	
 	if currentUsage+newUploadSize > storageLimitBytes {
 		return fmt.Errorf(
 			"storage limit exceeded: used %.2fMB of %.2fMB",
@@ -90,4 +95,3 @@ func EnsureWithinQuota(currentUsage, newUploadSize, storageLimitBytes int64) err
 	}
 	return nil
 }
-

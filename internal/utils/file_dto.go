@@ -51,12 +51,17 @@ func FromFileModels(files []models.File) []FileResponseDTO {
 
 
 func FromUserStorageModel(user models.User) UserStorageDTO {
+	percent := 0.0
+	if user.StorageLimit > 0 {
+		percent = (float64(user.UsedStorage) / float64(user.StorageLimit)) * 100
+	}
+
 	return UserStorageDTO{
 		ID:           user.ID,
 		Email:        user.Email,
 		UsedStorage:  user.UsedStorage,
 		StorageLimit: user.StorageLimit,
-		PercentUsed:  (float64(user.UsedStorage) / float64(user.StorageLimit)) * 100,
+		PercentUsed:  percent,
 		Plan:         user.Plan,
 		Role:         user.Role,
 	}

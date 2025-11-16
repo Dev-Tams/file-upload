@@ -27,9 +27,12 @@ func (f *Service) UploadFiles(userID string, files []*multipart.FileHeader) ([]u
 		}
 
 		//check storage + current file upload
-		if err := utils.EnsureWithinQuota(currentUsage, totalNewSize, user.StorageLimit); err != nil {
+		limitBytes := int64(user.StorageLimit) * 1024 * 1024
+
+		if err := utils.EnsureWithinQuota(currentUsage, totalNewSize, limitBytes); err != nil {
 			return err
 		}
+
 
 		//range files
 		for _, file := range files {
