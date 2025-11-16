@@ -20,6 +20,16 @@ func NewUserHandler(service *file_service.Service) *UserHandler {
 	return &UserHandler{service: service}
 }
 
+// FetchUsers godoc
+// @Summary Get all users
+// @Description Returns all user records from the database.
+// @Tags Users
+// @Produce json
+// @Success 200 {object} map[string]interface{} "All users from DB"
+// @Failure 500 {object} map[string]string "server error"
+// @Security BearerAuth
+// @Router /api/users [get]
+
 func (u *UserHandler) FetchUsers(c *gin.Context) {
 	users, err := u.service.GetAllUser()
 	if err != nil {
@@ -33,6 +43,17 @@ func (u *UserHandler) FetchUsers(c *gin.Context) {
 	})
 
 }
+
+// FetchUser godoc
+// @Summary Get user by ID
+// @Description Fetch a single user using their user_id.
+// @Tags Users
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Success 200 {object} map[string]interface{} "user data"
+// @Failure 404 {object} map[string]string "user not found"
+// @Security BearerAuth
+// @Router /api/users/{user_id} [get]
 
 func (u *UserHandler) FetchUser(c *gin.Context) {
 	userID := c.Param("user_id")
@@ -48,6 +69,16 @@ func (u *UserHandler) FetchUser(c *gin.Context) {
 	})
 
 }
+
+// DeleteUser godoc
+// @Summary Delete a user
+// @Description Deletes a user by their ID.
+// @Tags Users
+// @Param id path string true "User ID"
+// @Success 204 "no content"
+// @Failure 500 {object} map[string]interface{} "failed deleting user"
+// @Security BearerAuth
+// @Router /api/users/{id} [delete]
 func (u *UserHandler) DeleteUser(c *gin.Context) {
 
 	userID := c.Param("id")
@@ -63,6 +94,16 @@ func (u *UserHandler) DeleteUser(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+// GetUserStorage godoc
+// @Summary Get user storage
+// @Description Fetch a user's storage usage and limit.
+// @Tags Storage
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Success 200 {object} map[string]interface{} "storage info"
+// @Failure 404 {object} map[string]string "user not found"
+// @Security BearerAuth
+// @Router /api/users/{user_id}/storage [get]
 
 func (u *UserHandler) GetUserStorage(c *gin.Context) {
 
@@ -81,6 +122,15 @@ func (u *UserHandler) GetUserStorage(c *gin.Context) {
 
 	})
 }
+// GetAllUserStorage godoc
+// @Summary Get storage info for all users
+// @Description Returns storage usage and limits for every user.
+// @Tags Storage
+// @Produce json
+// @Success 200 {object} map[string]interface{} "list of user storage"
+// @Failure 404 {object} map[string]string "no users found"
+// @Security BearerAuth
+// @Router /api/users/storage [get]
 
 func (u *UserHandler) GetAllUserStorage(c *gin.Context) {
 
@@ -97,6 +147,19 @@ func (u *UserHandler) GetAllUserStorage(c *gin.Context) {
 		"data":     users,
 	})
 }
+// UpdateUserStorage godoc
+// @Summary Update a user's storage limit
+// @Description Admin can manually override the storage limit for a user.
+// @Tags Storage
+// @Accept json
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Param body body object{newLimit=int64} true "New storage limit in MB"
+// @Success 200 {object} map[string]interface{} "updated storage limit"
+// @Failure 400 {object} map[string]interface{} "invalid json"
+// @Failure 404 {object} map[string]string "user not found"
+// @Security BearerAuth
+// @Router /api/users/{user_id}/storage [put]
 
 func (u *UserHandler) UpdateUserStorage(c *gin.Context) {
 	var req struct {
@@ -125,6 +188,19 @@ func (u *UserHandler) UpdateUserStorage(c *gin.Context) {
 		"storage": fmt.Sprintf("%dMB", user.StorageLimit),
 	})
 }
+// AssignPlan godoc
+// @Summary Assign a subscription plan to a user
+// @Description Updates a user's plan (free, pro, etc.) and adjusts storage limit.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Param body body object{plan=string} true "Plan name"
+// @Success 200 {object} map[string]interface{} "plan updated"
+// @Failure 400 {object} map[string]interface{} "invalid json"
+// @Failure 404 {object} map[string]string "user not found"
+// @Security BearerAuth
+// @Router /api/users/{user_id}/plan [put]
 
 func (u *UserHandler) AssignPlan(c *gin.Context) {
 
@@ -157,6 +233,20 @@ func (u *UserHandler) AssignPlan(c *gin.Context) {
 }
 
 // basic for testing purposes.
+// ResetPassword godoc
+// @Summary Reset a user's password (testing only)
+// @Description Updates the user's password directly — not recommended for production.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param body body object{email=string,password=string} true "Reset password payload"
+// @Success 200 {object} map[string]interface{} "password updated"
+// @Failure 400 {object} map[string]interface{} "invalid json"
+// @Failure 404 {object} map[string]string "user not found"
+// @Failure 500 {object} map[string]interface{} "failed to update"
+// @Security BearerAuth
+// @Router /api/users/reset-password [post]
+
 func ResetPassword(c *gin.Context) {
 	var req struct {
 		Email    string

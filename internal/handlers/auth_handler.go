@@ -10,6 +10,18 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
+// Register godoc
+// @Summary Register a new user
+// @Description Creates a user account with email and password. Password must be at least 6 characters.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body models.User true "User registration payload"
+// @Success 201 {object} map[string]string "user created"
+// @Failure 400 {object} map[string]interface{} "invalid json or email format"
+// @Failure 409 {object} map[string]string "email already registered"
+// @Failure 500 {object} map[string]interface{} "server error"
+// @Router /api/auth/register [post]
 
 func Register(c *gin.Context) {
 	var user models.User
@@ -65,6 +77,19 @@ func Register(c *gin.Context) {
 	})
 
 }
+
+// Login godoc
+// @Summary Login a user
+// @Description Authenticates a user and returns a JWT token.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param credentials body models.User true "Login credentials"
+// @Success 200 {object} map[string]string "JWT token"
+// @Failure 400 {object} map[string]interface{} "invalid json"
+// @Failure 401 {object} map[string]interface{} "invalid credentials"
+// @Failure 500 {object} map[string]interface{} "unable to generate token"
+// @Router /api/auth/login [post]
 
 func Login(c *gin.Context) {
 	var creds models.User

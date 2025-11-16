@@ -1,3 +1,14 @@
+// @title File Upload API
+// @version 1.0
+// @description API for file upload management
+// @host localhost:8000
+// @basePath /api
+// @schemes http https
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Insert your JWT token like: Bearer <token>
+
 package main
 
 import (
@@ -15,6 +26,8 @@ import (
 	"github.com/dev-tams/file-upload/internal/storage"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func init() {
@@ -36,8 +49,9 @@ func main() {
 		log.Println("Admin user seeding complete. Exiting.")
 		return
 	}
+
 	config.InitRedis()
-	cfg := config.Config 
+	cfg := config.Config
 	storageProvider, err := storage.NewStorageProvider(cfg)
 	if err != nil {
 		log.Fatalf("Failed to initialize storage provider: %v", err)
@@ -48,9 +62,9 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 	router.RegisterRoutes(r, service)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	port := config.Config.Port
-
 	fmt.Printf(" server running on port %s", port)
 	r.Run(":" + port)
 

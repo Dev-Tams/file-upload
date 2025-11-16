@@ -17,6 +17,18 @@ type FileHandler struct {
 func NewAdminFileHandler(service *file_service.Service) *FileHandler {
 	return &FileHandler{service: service}
 }
+// GetFile godoc
+// @Summary Get a file by ID
+// @Description Fetch a single file belonging to a specific user.
+// @Tags Admin Files
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Param id path string true "File ID"
+// @Success 200 {object} map[string]interface{} "file object"
+// @Failure 400 {object} map[string]interface{} "missing parameters"
+// @Failure 404 {object} map[string]interface{} "file not found"
+// @Security BearerAuth
+// @Router /api/admin/users/{user_id}/files/{id} [get]
 
 func(f *FileHandler) GetFile(ctx *gin.Context) {
 	ID := ctx.Param("id")
@@ -40,6 +52,20 @@ func(f *FileHandler) GetFile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"file": file})
 
 }
+
+// GetAllFiles godoc
+// @Summary Get all files for a user (paginated)
+// @Description Returns paginated list of files belonging to a user.
+// @Tags Admin Files
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{} "paginated file data"
+// @Failure 400 {object} map[string]interface{} "user id required"
+// @Failure 500 {object} map[string]interface{} "pagination error"
+// @Security BearerAuth
+// @Router /api/admin/users/{user_id}/files [get]
 
 func(f *FileHandler) GetAllFiles(ctx *gin.Context) {
 
@@ -83,6 +109,19 @@ func(f *FileHandler) GetAllFiles(ctx *gin.Context) {
 	})
 }
 
+// DownloadFile godoc
+// @Summary Download a file
+// @Description Download a file belonging to a user. Returns file attachment.
+// @Tags Admin Files
+// @Produce application/octet-stream
+// @Param user_id path string true "User ID"
+// @Param id path string true "File ID"
+// @Success 200 {string} binary "file download"
+// @Failure 400 {object} map[string]interface{} "missing parameters"
+// @Failure 404 {object} map[string]interface{} "file not found"
+// @Security BearerAuth
+// @Router /api/admin/users/{user_id}/files/{id}/download [get]
+
 func(f *FileHandler) DownloadFile(ctx *gin.Context) {
 	id := ctx.Param("id")
 	userID := ctx.Param("user_id")
@@ -105,6 +144,19 @@ func(f *FileHandler) DownloadFile(ctx *gin.Context) {
 	ctx.FileAttachment(file.Path, file.OriginalName)
 	ctx.Status(http.StatusOK)
 }
+
+// DeleteFile godoc
+// @Summary Delete a file
+// @Description Soft-deletes a file belonging to a specific user.
+// @Tags Admin Files
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Param id path string true "File ID"
+// @Success 204 {string} string "file deleted"
+// @Failure 400 {object} map[string]interface{} "missing parameters"
+// @Failure 406 {object} map[string]interface{} "delete failed"
+// @Security BearerAuth
+// @Router /api/admin/users/{user_id}/files/{id} [delete]
 
 func(f *FileHandler) DeleteFile(ctx *gin.Context) {
 

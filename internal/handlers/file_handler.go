@@ -21,6 +21,18 @@ func NewFileHandler(service *file_service.Service) *FileHandler {
 	return &FileHandler{service: service}
 }
 
+// GetFile godoc
+// @Summary Get a single file
+// @Description Fetch a file belonging to the authenticated user by file ID.
+// @Tags Files
+// @Produce json
+// @Param id path string true "File ID"
+// @Success 200 {object} map[string]interface{} "file object"
+// @Failure 400 {object} map[string]string "id required"
+// @Failure 404 {object} map[string]string "file not found"
+// @Security BearerAuth
+// @Router /api/files/{id} [get]
+
 func (f *FileHandler) GetFile(c *gin.Context) {
 	ID := c.Param("id")
 	if ID == "" {
@@ -39,6 +51,18 @@ func (f *FileHandler) GetFile(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"file": file})
 
 }
+
+// GetAllFile godoc
+// @Summary Get all files for the authenticated user
+// @Description Returns paginated list of user files with metadata.
+// @Tags Files
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
+// @Success 200 {object} map[string]interface{} "paginated files"
+// @Failure 500 {object} map[string]string "pagination error"
+// @Security BearerAuth
+// @Router /api/files [get]
 
 func (f *FileHandler) GetAllFile(c *gin.Context) {
 
@@ -71,6 +95,20 @@ func (f *FileHandler) GetAllFile(c *gin.Context) {
 		},
 	})
 }
+
+// PostFile godoc
+// @Summary Upload one or multiple files
+// @Description Upload files with idempotency protection. Requires `Idempotency-Key` header.
+// @Tags Files
+// @Accept mpfd
+// @Produce json
+// @Param Idempotency-Key header string true "Idempotency Key"
+// @Param file formData file true "One or more files"
+// @Success 200 {object} map[string]interface{} "Files uploaded successfully"
+// @Failure 400 {object} map[string]string "missing Idempotency Key / no files uploaded"
+// @Failure 500 {object} map[string]string "error uploading files"
+// @Security BearerAuth
+// @Router /api/files/upload [post]
 
 func (f *FileHandler) PostFile(c *gin.Context) {
 
@@ -134,6 +172,18 @@ func (f *FileHandler) PostFile(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// DownloadFile godoc
+// @Summary Download a file
+// @Description Downloads a file owned by the authenticated user.
+// @Tags Files
+// @Produce application/octet-stream
+// @Param id path string true "File ID"
+// @Success 200 "File attachment"
+// @Failure 400 {object} map[string]string "ID required"
+// @Failure 404 {object} map[string]string "file not found"
+// @Security BearerAuth
+// @Router /api/files/download/{id} [get]
+
 func (f *FileHandler) DownloadFile(c *gin.Context) {
 	ID := c.Param("id")
 
@@ -153,6 +203,17 @@ func (f *FileHandler) DownloadFile(c *gin.Context) {
 
 	c.FileAttachment(file.Path, file.OriginalName)
 }
+
+// DeleteFile godoc
+// @Summary Delete a file
+// @Description Deletes a file belonging to the authenticated user.
+// @Tags Files
+// @Param id path string true "File ID"
+// @Success 204 "No Content"
+// @Failure 400 {object} map[string]string "id required"
+// @Failure 406 {object} map[string]interface{} "failed to delete file"
+// @Security BearerAuth
+// @Router /api/files/{id} [delete]
 
 func (f *FileHandler) DeleteFile(c *gin.Context) {
 	ID := c.Param("id")

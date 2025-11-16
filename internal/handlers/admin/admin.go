@@ -16,6 +16,18 @@ import (
 	"gorm.io/gorm"
 )
 
+// PromoteToAdmin godoc
+// @Summary Promote a user to admin
+// @Description Change a user's role to admin by their ID.
+// @Tags Admin Users
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Success 200 {object} map[string]interface{} "user promoted"
+// @Failure 404 {object} map[string]interface{} "user not found"
+// @Failure 500 {object} map[string]interface{} "failed to update role"
+// @Security BearerAuth
+// @Router /api/admin/users/{user_id}/promote [put]
+
 func PromoteToAdmin(ctx *gin.Context) {
 	userID := ctx.Param("user_id")
 
@@ -33,6 +45,13 @@ func PromoteToAdmin(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "user promoted to admin"})
 }
+
+//SeedAdminFromENV godoc
+// @Summary Seed super admin from environment variables
+// @Description Creates a super admin user using SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASSWORD from .env if not already present.
+// @Tags Admin Setup
+// @Success 200 {string} string "admin created or already exists"
+// @Failure 500 {object} map[string]string "failed to create admin"
 
 func SeedAdminFromENV() {
 	email := os.Getenv("SUPER_ADMIN_EMAIL")
